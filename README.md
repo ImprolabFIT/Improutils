@@ -1,0 +1,1 @@
+This repository contains Python library with useful helper functions for Machine vision and Image processing (BI-SVZ) coursework taught at [FIT CTU](https://fit.cvut.cz/en). For more details, see [main course page](https://github.com/ImprolabFIT/BI-SVZ-coursework).
