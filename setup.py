@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="improutils",
-    version="0.1.0",
+    version="0.1.1",
     author="ImproLab",
     author_email="improlab@fit.cvut.cz",
     description="Package with useful functions for BI-SVZ coursework",
