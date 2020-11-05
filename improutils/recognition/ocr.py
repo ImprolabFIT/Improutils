@@ -1,4 +1,4 @@
-from PIL.Image import Image
+import PIL
 from pytesseract import pytesseract
 
 from improutils import negative
@@ -17,4 +17,4 @@ def ocr(img_bin):
     '''
     # Tesseract works with black objects on white background.
     img_bin = negative(img_bin)
-    return pytesseract.image_to_string(Image.fromarray(img_bin))
+    return pytesseract.image_to_string(PIL.Image.fromarray(img_bin))

@@ -1,10 +1,13 @@
+import numpy as np
+import cv2
+
 def midpoint(ptA, ptB):
     '''Returns the midpoint between two input points.'''
     return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 
 def artificial_circle_image(size):
-    img_art_circ = np.ndarray((size, size), dtype=np.float32)
+    img_art_circ = np.ndarray((size, size), dtype=np.uint8)
     step = 10
     for i in range(step, size, step):
         cv2.circle(img_art_circ, (int(size / 2.0), int(size / 2.0)), i - step, np.random.randint(0, 255), thickness=4)
