@@ -1,9 +1,6 @@
 import numpy as np
 import cv2
 
-# From recognition image features
-from improutils import get_center
-
 def contour_to_image(contour, image, size=None):
     ''' Creates new image from the contour.
     It's similar to contour cropping but it's not that fast.
@@ -91,3 +88,21 @@ def fill_holes(img_bin, close=False, size=5):
         img_bin = cv2.morphologyEx(img_bin, cv2.MORPH_CLOSE, struct)
     res, _, _ = find_contours(img_bin)
     return res
+
+
+def get_center(contour):
+    ''' Gets the center of contour in pixels in tuple format.
+
+    Parameters
+    ----------
+    contour : numpy.ndarray
+        input contour.
+    Returns
+    -------
+    Center in pixels in tuple format.
+    '''
+    M = cv2.moments(contour)
+    cX = int(M['m10'] / M['m00'])
+    cY = int(M['m01'] / M['m00'])
+
+    return cX, cY

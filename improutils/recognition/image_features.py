@@ -91,21 +91,3 @@ def extent(bin_im):
     area = cv2.contourArea(conts[0])
     w, h = cv2.minAreaRect(conts[0])[1]
     return ShapeDescriptors.extent(area, w * h)
-
-
-def get_center(contour):
-    ''' Gets the center of contour in pixels in tuple format.
-
-    Parameters
-    ----------
-    contour : numpy.ndarray
-        input contour.
-    Returns
-    -------
-    Center in pixels in tuple format.
-    '''
-    M = cv2.moments(contour)
-    cX = int(M['m10'] / M['m00'])
-    cY = int(M['m01'] / M['m00'])
-
-    return cX, cY
