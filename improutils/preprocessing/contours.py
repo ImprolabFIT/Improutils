@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+# From recognition image features
+from improutils import get_center
 
 def contour_to_image(contour, image, size=None):
     ''' Creates new image from the contour.
