@@ -7,7 +7,7 @@ def midpoint(ptA, ptB):
 
 
 def artificial_circle_image(size):
-    img_art_circ = np.ndarray((size, size), dtype=np.uint8)
+    img_art_circ = np.zeros((size, size), dtype=np.uint8)
     step = 10
     for i in range(step, size, step):
         cv2.circle(img_art_circ, (int(size / 2.0), int(size / 2.0)), i - step, np.random.randint(0, 255), thickness=4)
