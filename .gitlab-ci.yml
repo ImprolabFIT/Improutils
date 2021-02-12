@@ -1,11 +1,17 @@
 image: python:latest
 
 stages:
+  - test
   - deploy
 
 before_script:
    - pip install twine
    - python setup.py sdist
+
+test_install:
+  stage: test
+  script:
+    - python test_install.py
 
 deploy_staging:
   stage: deploy
