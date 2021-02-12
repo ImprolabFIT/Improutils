@@ -5,3 +5,5 @@ from .preprocessing import *
 from .recognition import *
 from .segmentation import *
 from .visualisation import *
+
+from .version import __version__
