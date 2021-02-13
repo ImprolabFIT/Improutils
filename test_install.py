@@ -1,1 +1,2 @@
 print('Yey')
+assert(False)
