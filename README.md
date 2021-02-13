@@ -4,13 +4,14 @@ This repository contains Python library with useful helper functions for Machine
 This repository uses GitLab CI/CD Pipelines to deploy improutils package either to production or test PyPI.
 
 #### Steps to release a new version to production PyPI
+ - Update version.py file with a new version number with respect to [semantic versioning rules](https://semver.org/)
  - Commit your local changes
 	 - ```git commit -m "Add awesome AI feature" ```
- - Create a tag version with respect to [semantic versioning rules](https://semver.org/)
-	 - ```git tag 'x.x.x'```
+ - Create a tagged version based on version.py
+	 - ```git tag -a $(python3 setup.py --version)```
  - Push tag to origin
 	 - ```git push --tags```
  - Wait for the package to be deployed and then check new version at [PyPI](https://pypi.org/project/improutils/)
 
 #### Steps to release a new version to test PyPI
-Almost same as above, but the **create and push tag step** must be skipped. Testing version is available at [test PyPI](https://test.pypi.org/project/improutils/).
+Almost same as above, but the **push tag step** must be skipped. Testing version is available at [test PyPI](https://test.pypi.org/project/improutils/).
