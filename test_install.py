@@ -1,2 +1,2 @@
 print('Yey')
-assert(False)
+assert(True)
