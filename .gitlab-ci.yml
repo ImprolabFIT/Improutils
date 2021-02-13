@@ -11,17 +11,9 @@ before_script:
 test_install:
   stage: test
   script:
+    - sudo apt-get install -y libgl1-mesa-dev
+    - pip install .
     - python test_install.py
-
-deploy_staging:
-  stage: deploy
-  variables:
-    TWINE_USERNAME: $PYPI_USER
-    TWINE_PASSWORD: $PYPI_TOKEN_TEST
-  script:
-    - twine upload --repository testpypi dist/*
-  except:
-    - tags
 
 deploy_production:
   stage: deploy
@@ -32,3 +24,4 @@ deploy_production:
     - twine upload dist/*
   only:
     - tags
+    - master
