@@ -20,13 +20,13 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "matplotlib>=3.3.4",
-        "numpy>=1.20.1",
-        "opencv-python>=4.5.1.48",
+        "numpy>=1.19.3",
         "Pillow>=8.1.0",
+        "matplotlib>=3.4.2",
+        "opencv-python>=4.5.3.56",
         "Pylon>=0.4.4",
         "pytesseract>=0.3.7",
         "wheel",
-      ],
+    ],
     python_requires='>=3.6',
 )
