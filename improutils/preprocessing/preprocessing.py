@@ -73,6 +73,11 @@ def normalize(img):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
 
+def normalize2BGR_image(img):
+    scaled = ((img - img.min()) * (1/(img.max() - img.min()) * 255)).astype('uint8')
+    return cv2.cvtColor(scaled, cv2.COLOR_GRAY2BGR)
+
+
 def crop(img, tl_x, tl_y, br_x, br_y):
     ''' Crops image by added coordinates.
 
@@ -172,6 +177,30 @@ def rotate(img, angle):
 
     dest = cv2.warpAffine(img, rotation_mat, (bound_w, bound_h))
     return dest
+
+
+def rotate_image(image, angle, image_center=None):
+    """ Rotates the input image by specified angle.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Image to be rotated.
+    angle : float
+        Rotation angle.
+    image_center : Optional[tuple(int, int)]
+        Center of rotation.
+    Returns
+    -------
+    np.ndarray
+        Returns the rotated input image by specified angle.
+    """
+    if image_center is None:
+        image_center = tuple(np.array(image.shape[1::-1]) / 2)
+
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result
 
 
 # Linear polar warp help function
