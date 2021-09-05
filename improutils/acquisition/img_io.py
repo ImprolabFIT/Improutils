@@ -112,23 +112,3 @@ def reindex_image_files(source_dir, output_dir=None):
         print(
             f'Files from {source_dir} were renamed and saved to {output_dir}, starting from 0{extension} to {i}{extension}.')
 
-
-def create_file_path(folder, file_name):
-    '''Easier defined function to create path for filename inside a folder.
-
-    Parameters
-    ----------
-    folder : string
-        Base folder directory in string notation.
-    file_name : string
-        File name that should be inside the base folder.
-    Returns
-    -------
-    string
-        Path to the newly created file.
-    """
-    '''
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
-
-    return os.path.join(folder, file_name)
