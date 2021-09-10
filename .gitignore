@@ -7,3 +7,4 @@ dist/
 *.iml
 .idea/
 /out/
+venv

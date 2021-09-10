@@ -3,6 +3,9 @@ from improutils.acquisition import *
 from improutils.filtration import *
 from improutils.visualisation import *
 from improutils.preprocessing import *
+from pathlib import Path
+
+base_path = Path(__name__).parent.absolute() / 'tests' / 'img'
 
 class FiltrationTestCase(unittest.TestCase):
 
@@ -10,7 +13,7 @@ class FiltrationTestCase(unittest.TestCase):
 
     def test_inverse_fft(self):
         eps = 0.01
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_gray(img)
         ref_magnitude, fft_shift = apply_fft(img)
         img_inverse = inverse_fft(fft_shift)
@@ -25,7 +28,7 @@ class FiltrationTestCase(unittest.TestCase):
         self.assertLess(cv2.norm(img_inverse - img_back), eps)
 
     def test_filtration_median(self):
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img_median = filtration_median(img, 5)
 
         self.assertEqual(img.shape, img_median.shape)

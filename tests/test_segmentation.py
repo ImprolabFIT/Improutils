@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from improutils.acquisition import *
 from improutils.visualisation import *
@@ -8,7 +9,8 @@ from improutils.segmentation import *
 class SegmentationCase(unittest.TestCase):
 
     def test_to_3_channels(self):
-        img_org = load_image('../tests/img/test-img.png')
+        img_path = Path(__name__).parent.absolute() / 'tests' / 'img' / 'test-img.png'
+        img_org = load_image(str(img_path))
         img_org = to_gray(img_org)
 
         img = to_3_channels(img_org)

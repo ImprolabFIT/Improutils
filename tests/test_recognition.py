@@ -4,6 +4,9 @@ from improutils.visualisation import *
 from improutils.preprocessing import *
 from improutils.segmentation import *
 from improutils.recognition import *
+from pathlib import Path
+
+base_path = Path(__name__).parent.absolute() / 'tests' / 'img'
 
 
 class ImageFeaturesTestCase(unittest.TestCase):
@@ -11,7 +14,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
     def test_form_factor(self):
         eps = 0.04
         blue = ((90, 0, 0), (135, 255, 255))
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_hsv(img)
 
         img_bin = cv2.inRange(img, blue[0], blue[1])
@@ -22,7 +25,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
     def test_aspect_ratio(self):
         eps = 0.04
         red = ((150, 0, 0), (180, 255, 255))
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_hsv(img)
 
         img_bin = cv2.inRange(img, red[0], red[1])
@@ -34,7 +37,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
         eps = 0.04
         red = ((150, 0, 0), (180, 255, 255))
         yellow = ((15, 0, 0), (30, 255, 255))
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_hsv(img)
 
         img_bin_square = cv2.inRange(img, red[0], red[1])
@@ -49,7 +52,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
         eps = 0.041
         red = ((150, 0, 0), (180, 255, 255))
         yellow = ((15, 0, 0), (30, 255, 255))
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_hsv(img)
 
         img_bin_square = cv2.inRange(img, red[0], red[1])
@@ -64,7 +67,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
         eps = 0.04
         red = ((150, 0, 0), (180, 255, 255))
         yellow = ((15, 0, 0), (30, 255, 255))
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_hsv(img)
 
         img_bin_square = cv2.inRange(img, red[0], red[1])
@@ -78,7 +81,7 @@ class ImageFeaturesTestCase(unittest.TestCase):
 class OcrTestCase(unittest.TestCase):
 
     def test_ocr(self):
-        img = load_image('../tests/img/ocr-img.png')
+        img = load_image(str(base_path / 'ocr-img.png'))
         img_bin = segmentation_two_thresholds(img, 0, 10)
 
         text = ocr(img_bin)

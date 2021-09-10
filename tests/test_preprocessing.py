@@ -6,11 +6,14 @@ from improutils.acquisition import *
 from improutils.visualisation import *
 from improutils.preprocessing import *
 from improutils.segmentation import *
+from pathlib import Path
+
+base_path = Path(__name__).parent.absolute() / 'tests' / 'img'
 
 class PreprocessingTestCase(unittest.TestCase):
 
     def test_to_gray(self):
-        img_org = load_image('../tests/img/test-img.png')
+        img_org = load_image(str(base_path / 'test-img.png'))
         img = to_gray(img_org)
 
         self.assertEqual(len(img.shape), 2)
@@ -46,7 +49,7 @@ class PreprocessingTestCase(unittest.TestCase):
         self.assertEqual(img_crop.shape, (br_x - tl_x, br_y - tl_y, 3))
 
     def test_crop_by_bounding_rect(self):
-        img_org = load_image('../tests/img/test-img.png')
+        img_org = load_image(str(base_path / 'test-img.png'))
         blue = ((90, 0, 0), (135, 255, 255))
 
         img = to_hsv(img_org)
@@ -82,7 +85,7 @@ class ContoursTestCase(unittest.TestCase):
         self.assertFalse(np.bitwise_xor(img, img_contour).any())
 
     def test_find_contours(self):
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_gray(img)
         img_bin = segmentation_two_thresholds(img, 0, 250)
 
@@ -91,7 +94,7 @@ class ContoursTestCase(unittest.TestCase):
 
     def test_fill_holes(self):
         eps = 100
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_gray(img)
         img_bin = segmentation_two_thresholds(img, 0, 250)
 
@@ -105,7 +108,7 @@ class ContoursTestCase(unittest.TestCase):
     def test_get_center(self):
 
         ref_center = (290, 519)
-        img = load_image('../tests/img/test-img.png')
+        img = load_image(str(base_path / 'test-img.png'))
         img = to_gray(img)
         img_bin = segmentation_two_thresholds(img, 70, 100)
 
