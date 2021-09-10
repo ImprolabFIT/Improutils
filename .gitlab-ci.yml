@@ -1,4 +1,4 @@
-image: python:latest
+image: python:3.9
 
 stages:
   - test
@@ -11,8 +11,11 @@ before_script:
 test_install:
   stage: test
   script:
+    - apt-get update
+    - apt-get install -y python3-opencv
+    - apt-get install -y tesseract-ocr
     - pip install .
-    - python test_install.py
+    - python -m unittest discover -s tests
 
 deploy_production:
   stage: deploy
