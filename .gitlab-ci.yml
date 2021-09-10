@@ -25,5 +25,5 @@ deploy_production:
   script:
     - twine upload dist/* --verbose
   only:
-    - tags
     - master
+  when: manual
