@@ -11,6 +11,8 @@ before_script:
 test_install:
   stage: test
   script:
+    - apt-get install -y python3-opencv
+    - apt-get install -y tesseract-ocr
     - pip install .
     - python -m unittest discover -s tests
 
