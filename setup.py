@@ -4,10 +4,15 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+__version__ = "1.1.7"
+
+if os.environ.get('TARGET_ENV'):
+    __version__ = __version__ + ".dev" + os.environ['CI_JOB_ID']
+
 setuptools.setup(
     name="improutils",
     author="ImproLab",
-    version=open("improutils/version.py").readlines()[-1].split()[-1].strip("\"'"),
+    version=__version__,
     author_email="improlab@fit.cvut.cz",
     description="Package with useful functions for BI-SVZ coursework",
     long_description=long_description,
