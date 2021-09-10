@@ -13,7 +13,7 @@ test_install:
   script:
     - sudo apt-get install -y libgl1-mesa-dev
     - pip install .
-    - python test_install.py
+    - python -m unittest discover -s tests
 
 deploy_production:
   stage: deploy
