@@ -5,7 +5,7 @@ from matplotlib.colors import NoNorm, Normalize
 
 from improutils.other import *
 from improutils.acquisition.img_io import copy_to
-from improutils.preprocessing.preprocessing import rotate_image
+from improutils.preprocessing.preprocessing import rotate
 
 
 def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True):
@@ -136,7 +136,7 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
         angle = -angle + 90
     elif angle < 0:
         angle = angle + 90
-    text_mask = rotate_image(text_mask, -angle, point)
+    text_mask = rotate(text_mask, -angle, point)
     result = copy_to(img_filled, img.copy(), text_mask)
     return result
 

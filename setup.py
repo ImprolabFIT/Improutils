@@ -4,10 +4,15 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+__version__ = "1.1.7"
+
+if os.environ.get('TARGET_ENV'):
+    __version__ = __version__ + ".dev" + os.environ['CI_JOB_ID']
+
 setuptools.setup(
     name="improutils",
     author="ImproLab",
-    version=open("improutils/version.py").readlines()[-1].split()[-1].strip("\"'"),
+    version=__version__,
     author_email="improlab@fit.cvut.cz",
     description="Package with useful functions for BI-SVZ coursework",
     long_description=long_description,
@@ -20,10 +25,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "matplotlib>=3.3.4",
-        "numpy>=1.20.1",
-        "opencv-python>=4.5.1.48",
+        "numpy>=1.19.3",
         "Pillow>=8.1.0",
+        "matplotlib>=3.4.2",
+        "opencv-python>=4.5.3.56",
         "Pylon>=0.4.4",
         "pytesseract>=0.3.7",
         "wheel",

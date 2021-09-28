@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+import os
 
 def midpoint(ptA, ptB):
     """
@@ -68,61 +68,6 @@ def order_points(pts):
     # return the coordinates in top-left, top-right,
     # bottom-right, and bottom-left order
     return np.array([tl, tr, br, bl], dtype="float32")
-
-
-def load_csv(file_path):
-    """
-    Loads csv file
-
-    Parameters
-    ----------
-    file_path : string
-        Path of the file to be read
-
-    Returns
-    -------
-
-    _: ndarray
-        Data read from the text file.
-    """
-    return np.genfromtxt(file_path, delimiter=';')[:, :-1]
-
-
-def real_measure(w_px, h_px, depth, frame_width, frame_height, fov_horizontal_degrees, fov_vertical_degrees):
-    """
-    Function for counting the real measures in meters out of pixel values in depth map images.
-    Source: https://stackoverflow.com/a/45481222/1398955
-
-    Parameters
-    ----------
-    w_px : int
-        Width in pixels.
-    h_px : int
-        Height in pixels.
-    depth : float
-        Depth value in meters.
-    frame_width : int
-        Frame width in pixels.
-    frame_height : int
-        Frame height in pixels.
-
-    Returns
-    -------
-    w_m : int
-        Width in meters.
-    h_m : int
-        Height in meters.
-    """
-    fov_horizontal = fov_horizontal_degrees * np.pi / 180.0
-    fov_vertical = fov_vertical_degrees * np.pi / 180.0
-
-    horizontal_scaling = 2 * np.tan(fov_horizontal / 2.0) / float(frame_width)
-    vertical_scaling = 2 * np.tan(fov_vertical / 2.0) / float(frame_height)
-
-    w_m = w_px * horizontal_scaling * depth
-    h_m = h_px * vertical_scaling * depth
-
-    return w_m, h_m
 
 
 def pcd_to_depth(pcd, height, width):

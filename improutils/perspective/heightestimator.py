@@ -1,5 +1,5 @@
-from .coordconvert import *
-from .coordconvert import _calc_alfa_metric_factor
+from .coordconversion import _calc_alfa_metric_factor
+from .coordconversion import *
 
 class HeightEstimator:
 

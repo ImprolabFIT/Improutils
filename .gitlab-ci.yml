@@ -1,4 +1,4 @@
-image: python:latest
+image: python:3.9-slim
 
 stages:
   - test
@@ -11,9 +11,23 @@ before_script:
 test_install:
   stage: test
   script:
-    - sudo apt-get install -y libgl1-mesa-dev
+    - apt-get update
+    - apt-get install -y python3-opencv
+    - apt-get install -y tesseract-ocr
     - pip install .
-    - python test_install.py
+    - python -m unittest discover -s tests
+
+deploy_staging:
+  stage: deploy
+  variables:
+    TARGET_ENV: "stage"
+    TWINE_USERNAME: $PYPI_USER
+    TWINE_PASSWORD: $PYPI_TOKEN_TEST
+  script:
+    - twine upload --repository testpypi dist/* --verbose
+  only:
+    - master
+
 
 deploy_production:
   stage: deploy
@@ -21,7 +35,8 @@ deploy_production:
     TWINE_USERNAME: $PYPI_USER
     TWINE_PASSWORD: $PYPI_TOKEN_PROD
   script:
-    - twine upload dist/*
+    - version=$(python setup.py --version)
+    - twine upload dist/* --verbose
   only:
-    - tags
     - master
+  when: manual
