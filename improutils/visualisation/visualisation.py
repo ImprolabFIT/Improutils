@@ -1,10 +1,11 @@
 import math
-import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 
-import cv2
 from matplotlib.colors import NoNorm, Normalize
+
+from improutils.other import *
+from improutils.acquisition.img_io import copy_to
+from improutils.preprocessing.preprocessing import rotate
 
 
 def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True):
@@ -124,3 +125,31 @@ def rotated_rectangle(image, idx):
     box = np.int0(box)
     cv2.drawContours(res, [box], -1, (255, 255, 255), 1)
     return res, rect
+
+
+def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thickness):
+    img_filled = np.full(img.shape, text_color, dtype=np.uint8)
+    # create rotated text mask
+    text_mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
+    cv2.putText(text_mask, "{:.2f} cm".format(text), point, 0, text_scale, (255, 255, 255), text_thickness)
+    if angle > 0:
+        angle = -angle + 90
+    elif angle < 0:
+        angle = angle + 90
+    text_mask = rotate(text_mask, -angle, point)
+    result = copy_to(img_filled, img.copy(), text_mask)
+    return result
+
+
+def draw_real_sizes(img, rect, width_text, height_text, lbl_size_scale=2, lbl_color=(0, 0, 255), lbl_thickness=8):
+    tl, tr, br, bl = order_points(cv2.boxPoints(rect))
+    mid_pt_width = midpoint(tl, tr)
+    mid_pt_height = midpoint(tr, br)
+
+    # bottom-left points where labels are drawn
+    pt_label_first = (int(mid_pt_width[0] - 10), int(mid_pt_width[1] - 10))
+    pt_label_second = (int(mid_pt_height[0] + 10), int(mid_pt_height[1]))
+
+    result = draw_rotated_text(img, width_text, pt_label_first, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
+    result = draw_rotated_text(result, height_text, pt_label_second, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
+    return result
