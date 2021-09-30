@@ -32,6 +32,8 @@ setuptools.setup(
         "Pylon>=0.4.4",
         "pytesseract>=0.3.7",
         "wheel",
-    ],
+        "natsort>=5.3.3",
+        "PyYAML>=5.3.1",
+      ],
     python_requires='>=3.6',
 )

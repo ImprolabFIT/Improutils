@@ -3,6 +3,10 @@ import os
 import numpy as np
 import cv2
 
+import re
+from natsort import natsorted
+import shutil
+
 
 def load_image(file_path):
     """
@@ -67,3 +71,44 @@ def copy_to(src, dst, mask):
     locs = np.where(mask != 0)  # Get the non-zero mask locations
     dst[locs[0], locs[1]] = src[locs[0], locs[1]]
     return dst
+
+def reindex_image_files(source_dir, output_dir=None):
+    """ Reads all images in source_dir and based on they original order,
+    change their filename to be continuous integer (starting from 0).
+    Then, they can be easily read by cv2.VideoCapture. Image format is kept.
+
+    Parameters
+    ----------
+    source_dir : string
+        Input images directory that have to be renamed.
+    output_dir : Optional[string]
+        Output directory for renamed files. If not specified, renaming is done inplace in source_dir.
+    Returns
+    -------
+    None
+    """
+    input_files = []
+
+    for file in os.listdir(source_dir):
+        if re.match(r'.*(\.bmp|\.jpg|\.png|\.gif)$', file, re.I):
+            input_files.append(os.path.join(source_dir, file))
+
+    if not input_files:
+        print('No files were found.')
+        return
+
+    extension = '.' + input_files[0].split(".")[-1]
+    if output_dir is None:
+        for i, filename in enumerate(natsorted(input_files)):
+            os.rename(filename, os.path.join(source_dir, str(i) + extension))
+        print(f'Files within {source_dir} were renamed, starting from 0{extension} to {i}{extension}.')
+    else:
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+
+        for i, filename in enumerate(natsorted(input_files)):
+            shutil.copy(filename, os.path.join(output_dir, str(i) + extension))
+
+        print(
+            f'Files from {source_dir} were renamed and saved to {output_dir}, starting from 0{extension} to {i}{extension}.')
+
