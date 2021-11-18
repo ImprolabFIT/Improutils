@@ -8,7 +8,7 @@ from improutils.acquisition.img_io import copy_to
 from improutils.preprocessing.preprocessing import rotate
 
 
-def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True):
+def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True, title_size=32):
     assert channels.lower() in ['bgr', 'rgb', 'mono'], 'Possible values for channels are: bgr, rgb or mono!'
 
     #     f = plt.figure(figsize=(30, 20))
@@ -36,7 +36,7 @@ def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=Tru
                 print('WARNING titles lenght is not the same as images lenght!')
 
             try:
-                ax.set_title(str(titles[i - 1]))
+                ax.set_title(str(titles[i - 1]), fontdict={'fontsize': title_size, 'fontweight': 'medium'})
             except:
                 pass
 
