@@ -26,7 +26,7 @@ def filtration_median(img, filter_size):
     img : numpy.ndarray
         Input image.
     filter_size : int
-        Size of median filter.
+        Odd number - size of median filter.
     Returns
     -------
     Output image.
