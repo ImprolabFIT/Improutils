@@ -189,15 +189,26 @@ def rotate(image, angle, image_center=None):
     np.ndarray
         Returns the rotated input image by specified angle.
     """
-    if image_center is None:
-        image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    height, width = image.shape[:2]
+    if image_center == None:
+        image_center = (width / 2, height / 2)
 
-    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-    return result
+    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1.)
+
+    abs_cos = abs(rotation_mat[0, 0])
+    abs_sin = abs(rotation_mat[0, 1])
+
+    bound_w = int(height * abs_sin + width * abs_cos)
+    bound_h = int(height * abs_cos + width * abs_sin)
+
+    rotation_mat[0, 2] += bound_w / 2 - image_center[0]
+    rotation_mat[1, 2] += bound_h / 2 - image_center[1]
+
+    dest = cv2.warpAffine(image, rotation_mat, (bound_w, bound_h))
+    return dest
 
 
-# Linear polar warp help function
+# Polar warp help function
 def polar_warp(img, full_radius=True, inverse=False):
     center = (img.shape[0] / 2.0, img.shape[1] / 2.0)
 
@@ -207,10 +218,13 @@ def polar_warp(img, full_radius=True, inverse=False):
         radius = center[0]
 
     method = cv2.WARP_FILL_OUTLIERS
+    size = None
     if inverse:
         method += cv2.WARP_INVERSE_MAP
-    dest = cv2.linearPolar(img, center, radius, method)
+        size = img.shape[:2]
+    dest = cv2.warpPolar(img, size, center, radius, method)
     return dest
+
 
 
 def warp_to_cartesian(img, full_radius=True):
