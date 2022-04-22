@@ -15,3 +15,16 @@ This repository uses GitLab CI/CD Pipelines to deploy improutils package either 
 
 #### Steps to release a new version to test PyPI
 Almost same as above, but the **push tag step** must be skipped. Testing version is available at [test PyPI](https://test.pypi.org/project/improutils/).
+
+
+#### Installing on Windows in developer mode
+This is discussed more in detail in [installDevWin.md](./doc/installDevWin.md).
+
+#### Running the tests
+You must run the tests from the `improutils_package` directory.
+An example command for running the test may be as follows:
+```
+python tests\test_preprocessing.py
+```
+
+> Note: running the test from the `tests` directory itself will result in errors

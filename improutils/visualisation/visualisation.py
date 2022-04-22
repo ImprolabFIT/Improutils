@@ -33,7 +33,7 @@ def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=Tru
 
         if len(titles) != 0:
             if len(imgs) != len(titles):
-                print('WARNING titles lenght is not the same as images lenght!')
+                print('WARNING titles length is not the same as images length!')
 
             try:
                 ax.set_title(str(titles[i - 1]), fontdict={'fontsize': title_size, 'fontweight': 'medium'})

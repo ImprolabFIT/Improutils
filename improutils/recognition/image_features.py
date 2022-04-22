@@ -45,6 +45,7 @@ def roundness(bin_im):
 
 
 # Poměr stran
+# bin in is black white image
 def aspect_ratio(bin_im):
     _, _, conts = find_contours(bin_im)
     dims = cv2.minAreaRect(conts[0])[1]

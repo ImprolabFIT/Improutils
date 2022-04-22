@@ -5,9 +5,13 @@ import yaml
 
 from improutils.visualisation import plot_images
 
+# consts
+IDX_CAM_MATRIX = "camera_matrix"
+IDX_DIST_COEFFS = "dist_coefs"
 
 def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_delay=1):
-    """ Browses all images found in input_source and on each image tries to find chessboard corners.
+    """
+    Browses all images found in input_source and on each image tries to find chessboard corners.
     If chessboard corners are found, image corespondences with real world space are added to lists.
     Based on these image-world corespondences, camera calibration is made.
 
@@ -23,7 +27,7 @@ def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_del
         Delay in ms between shown images.
     Returns
     -------
-    tuple
+    _ : tuple
         camera matrix and distance coefficients
     """
 
@@ -82,15 +86,14 @@ def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_del
 
 
 def correct_frame(frame, camera_matrix, dist_coeffs):
-    """Returns undistorted frame."""
+    """
+    Returns an undistorted frame.
+    """
     return cv2.undistort(frame, camera_matrix, dist_coeffs)
 
-
-IDX_CAM_MATRIX = "camera_matrix"
-IDX_DIST_COEFFS = "dist_coefs"
-
 def load_camera_calib(input_file):
-    """ Loads camera calibration from specified input file.
+    """
+    Loads camera calibration from specified input file.
 
     Parameters
     ----------
@@ -98,7 +101,7 @@ def load_camera_calib(input_file):
         Input file with calibration data in YAML format.
     Returns
     -------
-    tuple(np.array, np.array)
+    tuple(ndarray, ndarray)
         Returns a tuple where first element is camera matrix array and second element is dist coefficients array.
         These arrays might be empty if the file isn't found or in correct format.
     """
@@ -112,7 +115,8 @@ def load_camera_calib(input_file):
 
 
 def save_camera_calib(output_file, camera_matrix, dist_coefs):
-    """ Saves camera calibration to specified output file.
+    """
+    Saves camera calibration to specified output file.
 
     Parameters
     ----------

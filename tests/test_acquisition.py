@@ -18,7 +18,7 @@ class ImgIOTestCase(unittest.TestCase):
         dst[:500, :] = (0, 0, 0)
         mask = np.zeros((src.shape[0], src.shape[1]))
         mask[:500,:] = 1
-
+        
         copy_to(src, dst, mask)
 
         self.assertFalse(np.bitwise_xor(src, dst ).any())
