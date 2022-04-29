@@ -32,7 +32,7 @@ def midpoint(ptA, ptB):
 
 def artificial_circle_image(size):
     """
-    Creates image with circles
+    Creates an image with circles
     Parameters
     ----------
     size : int
