@@ -6,6 +6,10 @@ from improutils import find_contours
 
 
 class ShapeDescriptors:
+    """
+    An internal class for shape descriptors.
+    If you are an user, you shall not call not nor work with the class directly
+    """
     def form_factor(area, perimeter):
         return (4 * np.pi * area) / (perimeter * perimeter)
 
@@ -30,162 +34,139 @@ class ShapeDescriptors:
 """
 An internal, helper function.
 Shall not be called directly by the user.
-Given a binary image, finds contours, and returns the result.
-If no contours were found, throws an exception.
+This can perform a check for contour validity.
+
+Right now, there is no check for validity, and the function does nothing.
+
+If the contour would be invalid, a ValueError shall be risen
 
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    One contour.
 
 Returns
 -------
-_ : number
-    The array with contours. The return type is specified by
-    the find_contours() function.
+
 Throws
 -------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+_ : a ValueError exception if ???
 """
-def _getContoursAndValidate(bin_im):
-    _, _, conts = find_contours(bin_im)
-    if(len(conts) == 0):
-        raise ValueError("No contours were found");
-    return conts;
+def _validateContourGiven(contour):
+    return;
 
 """
 Aka Špičatost.
-Allows to determine the form factor of a contour, which
-will be calculated from the input binary image
+Allows to determine the form factor of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
-"""
-def form_factor(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    return ShapeDescriptors.form_factor(cv2.contourArea(conts[0]), cv2.arcLength(conts[0], True))
 
 """
-Allows to determine the roundness of a contour, which
-will be calculated from the input binary image
+def form_factor(contour):
+    _validateContourGiven(contour)
+    return ShapeDescriptors.form_factor(cv2.contourArea(contour), cv2.arcLength(contour, True))
+
+"""
+Allows to determine the roundness of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def roundness(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    area = cv2.contourArea(conts[0])
-    _, radius = cv2.minEnclosingCircle(conts[0])
+def roundness(contour):
+    _validateContourGiven(contour)
+    area = cv2.contourArea(contour)
+    _, radius = cv2.minEnclosingCircle(contour)
     r = ShapeDescriptors.roundness(area, 2 * radius)
-    if r > 1: r = 1
+    if r > 1:
+        r = 1
     return r
 
 """
-Allows to determine the aspect ratio of a contour, which
-will be calculated from the input binary image
+Allows to determine the aspect ratio of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def aspect_ratio(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    dims = cv2.minAreaRect(conts[0])[1]
+def aspect_ratio(contour):
+    _validateContourGiven(contour)
+    dims = cv2.minAreaRect(contour)[1]
     min_diameter = min(dims)
     max_diameter = max(dims)
     return ShapeDescriptors.aspect_ratio(min_diameter, max_diameter)
 
 
 """
-Allows to determine the convexity of a contour, which
-will be calculated from the input binary image
+Allows to determine the convexity of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def convexity(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    hull = cv2.convexHull(conts[0], None, True, True)
-    per = cv2.arcLength(conts[0], True)
+def convexity(contour):
+    _validateContourGiven(contour)
+    hull = cv2.convexHull(contour, None, True, True)
+    per = cv2.arcLength(contour, True)
     conv_per = cv2.arcLength(hull, True)
     r = ShapeDescriptors.convexity(per, conv_per)
-    if r > 1: r = 1
+    if r > 1:
+        r = 1
     return r
 
 
 """
-Allows to determine the solidity of a contour, which
-will be calculated from the input binary image
+Allows to determine the solidity of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def solidity(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    hull = cv2.convexHull(conts[0], None, True, True)
-    area = cv2.contourArea(conts[0])
+def solidity(contour):
+    _validateContourGiven(contour)
+    hull = cv2.convexHull(contour, None, True, True)
+    area = cv2.contourArea(contour)
     conv_area = cv2.contourArea(hull)
     r = ShapeDescriptors.solidity(area, conv_area)
     if r > 1: r = 1
@@ -193,39 +174,34 @@ def solidity(bin_im):
 
 
 """
-Allows to determine the compactness of a contour, which
-will be calculated from the input binary image
+Allows to determine the compactness of the contour given
 Parameters
 ----------
-bin_im : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
+contour : ndarray
+    The contour. You can get it by calling
+    _, _, contours = improutils.find_contours()
+    Then that one contours is contours[i] where i is index of your choice.
 
 Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def compactness(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    area = cv2.contourArea(conts[0])
-    max_diameter = max(cv2.minAreaRect(conts[0])[1])
+def compactness(contour):
+    _validateContourGiven(contour)
+    area = cv2.contourArea(contour)
+    max_diameter = max(cv2.minAreaRect(contour)[1])
     r = ShapeDescriptors.compactness(area, max_diameter)
     if r > 1: r = 1
     return r
 
 
 """
-Allows to determine the extent of a contour, which
-will be calculated from the input binary image
+Allows to determine the extent of the contour given
 Parameters
 ----------
-bin_im : ndarray
+contour : ndarray
     binary image. This image contains only black and white values.
     Traditionally, you get it from the segmentation process.
 
@@ -233,14 +209,10 @@ Returns
 -------
 _ : number
     The number, describing the contour property
-Throws
--------
-_ : a ValueError exception if any of the following contitions hold:
-    [+] No contour was found in the input image.
-    This traditionally happens, if there are no white pixels in the input image
+
 """
-def extent(bin_im):
-    conts = _getContoursAndValidate(bin_im)
-    area = cv2.contourArea(conts[0])
-    w, h = cv2.minAreaRect(conts[0])[1]
+def extent(contour):
+    _validateContourGiven(contour)
+    area = cv2.contourArea(contour)
+    w, h = cv2.minAreaRect(contour)[1]
     return ShapeDescriptors.extent(area, w * h)
