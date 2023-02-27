@@ -1,4 +1,4 @@
-__version__ = "2.1.11"
+__version__ = "2.1.12"
 
 if os.environ.get('TARGET_ENV'):
     __version__ = __version__ + "-" + os.environ['CI_JOB_ID']
