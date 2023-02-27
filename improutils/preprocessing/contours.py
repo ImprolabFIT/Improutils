@@ -2,15 +2,16 @@ import numpy as np
 import cv2
 
 def contour_to_image(contour, image, size=None):
-    ''' Creates new image from the contour.
+    """
+    Creates a new image from the contour.
     It's similar to contour cropping but it's not that fast.
     It does not suffer from the known error if the contour is irregulary shaped.
 
     Parameters
     ----------
-    contour : numpy.ndarray
+    contour : ndarray
         Contour that represents the area from image to be cropped.
-    img_bin : numpy.ndarray
+    img_bin : ndarray
         Input binary image.
     size : tuple
         Optional size of the created image.
@@ -19,7 +20,8 @@ def contour_to_image(contour, image, size=None):
     Returns
     -------
     Output cropped image.
-    '''
+    """
+
     if size is None:
         _, _, w, h = cv2.boundingRect(contour)
         size = (w, h)
@@ -36,12 +38,13 @@ def contour_to_image(contour, image, size=None):
 
 
 def find_contours(img_bin, min_area=0, max_area=1000000, fill=True, external=True):
-    '''Finds contours in binary image and filters them using their area. Then it draws binary image
+    """
+    Finds contours in binary image and filters them using their area. Then it draws binary image
     from filtered contours. It counts contours as well.
 
     Parameters
     ----------
-    img_bin : numpy.ndarray
+    img_bin : ndarray
         Input binary image.
     min_area : int
         Size of contour that is used to filter all smaller contours out.
@@ -49,13 +52,13 @@ def find_contours(img_bin, min_area=0, max_area=1000000, fill=True, external=Tru
         Size of contour that is used to filter all larger contours out.
     Returns
     -------
-    contour_drawn : numpy.ndarray
+    contour_drawn : ndarray
         Output binary image with drawn filled filtered contours.
     count : int
         Number of found and filtered contours.
     contours : list
         Found contours.
-    '''
+    """
     mode = cv2.RETR_EXTERNAL
     if not external:
         mode = cv2.RETR_LIST
@@ -69,20 +72,21 @@ def find_contours(img_bin, min_area=0, max_area=1000000, fill=True, external=Tru
 
 
 def fill_holes(img_bin, close=False, size=5):
-    '''Fill holes in found contours. It could merge the contour using close input with appropriate size.
+    """
+    Fill the holes in found contours. It could merge the contour using close input with appropriate size.
 
     Parameters
     ----------
-    img_bin : numpy.ndarray
+    img_bin : ndarray
         Input binary image.
     close : boolean
         If it should merge contours with missing points using close operation.
     size : int
-        Size of close operation element.
+        Size of the close operation element.
     Returns
     -------
     Output binary image.
-    '''
+    """
     if close:
         struct = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (size, size))
         img_bin = cv2.morphologyEx(img_bin, cv2.MORPH_CLOSE, struct)
@@ -91,16 +95,18 @@ def fill_holes(img_bin, close=False, size=5):
 
 
 def get_center(contour):
-    ''' Gets the center of contour in pixels in tuple format.
+    """
+    Gets the center of a contour in pixels in tuple format.
 
     Parameters
     ----------
-    contour : numpy.ndarray
+    contour : ndarray
         input contour.
     Returns
     -------
-    Center in pixels in tuple format.
-    '''
+    _ : tuple
+        Center in pixels in tuple format.
+    """
     M = cv2.moments(contour)
     cX = int(M['m10'] / M['m00'])
     cY = int(M['m01'] / M['m00'])

@@ -3,11 +3,16 @@ import numpy as np
 # Functions for conversion within different types of coordinates
 def convert_pt_to_homogenous(pt):
     """
-    Convert input point in inhomogeneous coordinates to homogeneous.
+    Converts the input point from inhomogeneous coordinates to homogeneous ones.
 
-    :param pt: ndarray
+    Parameters
+    ----------
+    pt : ndarray
         Input point in inhomogeneous coordinates.
-    :return: ndarray
+
+    Returns
+    -------
+    _ : ndarray
         Input point in homogeneous coordinates.
     """
     return np.append(pt, np.array(1))
@@ -16,9 +21,14 @@ def convert_pt_from_homogenous(pt):
     """
     Convert input point in homogeneous coordinates to inhomogeneous.
 
-    :param pt: ndarray
+    Parameters
+    ----------
+    pt : ndarray
         Input point in homogeneous coordinates.
-    :return: ndarray
+
+    Returns
+    -------
+    _ : tuple
         Input point in inhomogeneous coordinates.
     """
     return tuple([elem / pt[-1] for elem in pt[:-1]])
@@ -46,7 +56,8 @@ def convert_pts_from_homogenous(pts):
     return np.array([convert_pt_from_homogenous(pt) for pt in pts])
 
 def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
-    """ Calculates alfa metric factor using multiple reference measurements via minimization ||As|| = 0. This is done by SVD.
+    """
+    Calculates alfa metric factor using multiple reference measurements via minimization ||As|| = 0. This is done by SVD.
         In depth overview can be found in https://www.robots.ox.ac.uk/~vgg/publications/1999/Criminisi99b/criminisi99b.pdf - PDF page 104.
 
     :param ref_measurements: list

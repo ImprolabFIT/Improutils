@@ -1,6 +1,10 @@
 from .coordconversion import _calc_alfa_metric_factor
 from .coordconversion import *
 
+"""
+Allows to estimate real world object height based on two points (top and bottom) measured
+on image plane.
+"""
 class HeightEstimator:
 
     def __init__(self, ref_measurements, vl, vz):
@@ -11,7 +15,8 @@ class HeightEstimator:
 
     def calc_height(self, top_point, bottom_point):
         """
-        Calculates real world height based on top_point and bottom_point measured on image plane.
+        Calculates real world height based on top_point and bottom_point measured
+        on image plane.
 
         :param top_point: ndarray
             Top point in reference direction of the object in inhomogeneous format.

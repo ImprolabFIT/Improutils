@@ -2,16 +2,17 @@ from pypylon import pylon
 
 
 def connect_camera(serial_number):
-    ''' Connects camera specified with its serial number
+    """
+    Connects the camera specified with its serial number
 
     Parameters
     ----------
     serial_number : string
-        Camera's serial number.
+        The camera's serial number.
     Returns
     -------
     camera : object
-    '''
+    """
     info = None
     for i in pylon.TlFactory.GetInstance().EnumerateDevices():
         if i.GetSerialNumber() == serial_number:

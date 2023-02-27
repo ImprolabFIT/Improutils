@@ -10,7 +10,7 @@ import shutil
 
 def load_image(file_path):
     """
-    @brief Loads an image from a file.
+    Loads an image from a file.
 
     The function calls cv2.imread() to load image from the specified file
     and then return it. If the image cannot be read, the AssertError exception is thrown.
@@ -31,7 +31,7 @@ def load_image(file_path):
 
 def save_image(image, file_path):
     """
-    @brief Save an image to a file.
+    Save an image to a file.
 
     The function calls cv2.imwrite() to save an image to the specified file. The image format is chosen based on the
     filename extension.
@@ -51,7 +51,7 @@ def save_image(image, file_path):
 
 def copy_to(src, dst, mask):
     """
-    @brief Copies source image pixel to destination image using mask matrix.
+    Copies source image pixel to destination image using mask matrix.
 
     This function is Python alternative to C++/Java OpenCV's Mat.copyTo().
     More: https://docs.opencv.org/trunk/d3/d63/classcv_1_1Mat.html#a626fe5f96d02525e2604d2ad46dd574f
@@ -111,4 +111,3 @@ def reindex_image_files(source_dir, output_dir=None):
 
         print(
             f'Files from {source_dir} were renamed and saved to {output_dir}, starting from 0{extension} to {i}{extension}.')
-

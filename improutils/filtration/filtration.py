@@ -3,7 +3,8 @@ import cv2
 
 
 def filtration_box(img, filter_size):
-    '''Filters image noise using box blur algorithm
+    """
+    Filters image noise using box blur algorithm
 
     Parameters
     ----------
@@ -14,12 +15,13 @@ def filtration_box(img, filter_size):
     Returns
     -------
     Output image.
-    '''
+    """
     return cv2.blur(img, (filter_size, filter_size))
 
 
 def filtration_median(img, filter_size):
-    '''Filters image noise using median algorithm
+    """
+    Filters image noise using median algorithm
 
     Parameters
     ----------
@@ -30,12 +32,13 @@ def filtration_median(img, filter_size):
     Returns
     -------
     Output image.
-    '''
+    """
     return cv2.medianBlur(img, filter_size)
 
 
 def filtration_gauss(img, filter_size, sigma_x):
-    '''Filters image noise using Gaussian blur algorithm
+    """
+    Filters image noise using Gaussian blur algorithm
 
     Parameters
     ----------
@@ -46,12 +49,13 @@ def filtration_gauss(img, filter_size, sigma_x):
     Returns
     -------
     Output image.
-    '''
+    """
     return cv2.GaussianBlur(img, (filter_size, filter_size), sigma_x)
 
 
 def apply_fft(image):
-    ''' Applies FFT on image given.
+    """
+    Applies FFT on image given.
 
     Parameters
     ----------
@@ -63,7 +67,7 @@ def apply_fft(image):
         Normalized magnitude spectrum.
     fftcls_shift : 2D array
         Centered product of FFT.
-    '''
+    """
     fftcls = np.fft.fft2(image)
     fftcls_shift = np.fft.fftshift(fftcls)
     mag_spec = 20 * np.log(np.abs(fftcls_shift))
@@ -71,7 +75,8 @@ def apply_fft(image):
 
 
 def inverse_fft(fft_shift, filter_mask=None):
-    ''' Applies inverse FFT.
+    """
+    Applies inverse FFT.
 
     Parameters
     ----------
@@ -83,7 +88,7 @@ def inverse_fft(fft_shift, filter_mask=None):
     -------
     img_back : 2D array
         Image made by inverse FFT.
-    '''
+    """
     fftshift = np.copy(fft_shift)
     if not filter_mask is None:
         fftshift[filter_mask != 255] = 0
@@ -93,7 +98,8 @@ def inverse_fft(fft_shift, filter_mask=None):
 
 
 def create_filter_mask(size, rows, columns):
-    ''' Creates a filter mask specified by rows and columns. Specified rows and columns are set to 255, others 0.
+    """
+    Creates a filter mask specified by rows and columns. Specified rows and columns are set to 255, others 0.
 
     Parameters
     ----------
@@ -103,7 +109,7 @@ def create_filter_mask(size, rows, columns):
     -------
     filter_mask : 2D array
         2D array mask containing 255 and 0 values.
-    '''
+    """
     if type(size) != tuple:
         raise Exception('Size param must be tuple!')
 
@@ -115,19 +121,20 @@ def create_filter_mask(size, rows, columns):
 
 
 def filter_mag_spec(mag_spec, filter_mask):
-    ''' Filters input spektrum using filter_mask image.
+    """
+    Filters input spectrum using filter_mask image.
 
     Parameters
     ----------
-    mag_spec : 2D array
+    mag_spec : 2D ndarray
         Image with magnitude spectrum.
     filter_mask : 2D array
         Filter binary mask image containing values to keep (255) and filter out (0).
     Returns
     -------
-    result : 2D array
+    result : 2D ndarray
         Vizualization of spectrum after filtering.
-    '''
+    """
     result = np.copy(mag_spec)
     result[filter_mask != 255] = 0
 
