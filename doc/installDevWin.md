@@ -4,7 +4,7 @@ in such a way that you can develop the code, and run the tests on your machine.
 
 The basic problem is, that if the repository would be only cloned,
 and you would run the tests, then the tests would import the improutils libraries,
-which would be tested, resulting in situation, when the downlaoded and edited improutils source files **would not be tested, as the test would run above the installed libraries**.
+which would be tested, resulting in situation, when the downloaded and edited improutils source files **would not be tested, as the test would run above the installed libraries**.
 
 This page explains, how to deal with this, using virtual environments.
 
