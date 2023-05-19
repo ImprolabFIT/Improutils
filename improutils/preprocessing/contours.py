@@ -37,7 +37,7 @@ def contour_to_image(contour, image, size=None):
     return blank[c[1] - half_y:c[1] + half_y, c[0] - half_x:c[0] + half_x].copy()
 
 
-def find_contours(img_bin, min_area=0, max_area=1000000, fill=True, external=True):
+def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True):
     """
     Finds contours in binary image and filters them using their area. Then it draws binary image
     from filtered contours. It counts contours as well.
