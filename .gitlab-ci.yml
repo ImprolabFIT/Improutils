@@ -14,6 +14,7 @@ test_install:
     - apt-get update
     - apt-get install -y python3-opencv
     - apt-get install -y tesseract-ocr
+    - apt-get install -y libzbar0
     - pip install .
     - python -m unittest discover -s tests
 
