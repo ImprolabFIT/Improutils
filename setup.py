@@ -4,7 +4,7 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-__version__ = "1.1.13"
+__version__ = "1.1.14"
 
 if os.environ.get('TARGET_ENV'):
     __version__ = __version__ + ".dev" + os.environ['CI_JOB_ID']
@@ -34,6 +34,7 @@ setuptools.setup(
         "wheel",
         "natsort>=5.3.3",
         "PyYAML>=5.3.1",
+        "qreader>=3.11",
       ],
     python_requires='>=3.6',
 )
