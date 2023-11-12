@@ -36,5 +36,5 @@ setuptools.setup(
         "PyYAML>=5.3.1",
         "qreader>=3.11",
       ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )
