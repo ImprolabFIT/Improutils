@@ -48,12 +48,10 @@ def artificial_circle_image(size):
         [+] The input size is not an integer type
         [+] The input size is smaller than 1 (< 1)
     """
-    if isinstance(size, int):
-        raise ValueError("Ivalid input size. Integer required. got {}".format(type(size)));
-    if size < 1:
-        raise ValueError("Ivalid input size, must be >= 0. Got {}".format(size));
+    if size < 0:
+        raise ValueError(f"Ivalid input size, must be >= 0. Got {size}");
 
-    img_art_circ = np.zeros((size, size), dtype=np.uint8)
+    img_art_circ = np.zeros((int(size), int(size)), dtype=np.uint8)
     step = 10
     for i in range(step, size, step):
         cv2.circle(img_art_circ, (int(size / 2.0), int(size / 2.0)), i - step, np.random.randint(0, 255), thickness=4)
