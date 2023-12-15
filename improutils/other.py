@@ -48,8 +48,8 @@ def artificial_circle_image(size):
         [+] The input size is not an integer type
         [+] The input size is smaller than 1 (< 1)
     """
-    if size < 0:
-        raise ValueError(f"Ivalid input size, must be >= 0. Got {size}");
+    if size < 1:
+        raise ValueError(f"Ivalid input size, must be >= 1. Got {size}");
 
     img_art_circ = np.zeros((int(size), int(size)), dtype=np.uint8)
     step = 10
