@@ -53,7 +53,7 @@ def artificial_circle_image(size):
 
     img_art_circ = np.zeros((int(size), int(size)), dtype=np.uint8)
     step = 10
-    for i in range(step, size, step):
+    for i in range(step, int(size), step):
         cv2.circle(img_art_circ, (int(size / 2.0), int(size / 2.0)), i - step, np.random.randint(0, 255), thickness=4)
     return img_art_circ
 
