@@ -4,7 +4,7 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-__version__ = "1.1.16"
+__version__ = "1.1.17"
 
 if os.environ.get('TARGET_ENV'):
     __version__ = __version__ + ".dev" + os.environ['CI_JOB_ID']
