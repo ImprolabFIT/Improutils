@@ -9,6 +9,26 @@ from improutils.preprocessing.preprocessing import rotate
 
 
 def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True, title_size=32):
+    """
+    Plots multiple images in one figure.
+    Parameters
+    ----------
+    *imgs : list
+        Arbitrary number of  images to be shown.
+    titles : list
+        Titles for each image.
+    channels : string
+        Colour channels. Possible values are "bgr", "rgb" or "mono".
+    normalize : bool
+        If True, image will be normalized.
+    ticks_off : bool
+        If True, axis decorations will be hidden.
+    title_size : int
+        Size of the title.
+    Returns
+    -------
+    None
+    """
     assert channels.lower() in ['bgr', 'rgb', 'mono'], 'Possible values for channels are: bgr, rgb or mono!'
 
     #     f = plt.figure(figsize=(30, 20))
@@ -53,7 +73,10 @@ def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=Tru
 
 
 def show_images(*imgs, scale=1, window_name='Image preview'):
-    """ Opens multiple image previews depending on the length of the input *imgs list.
+    """
+    This function is deprecated. Use plot_images instead.
+    
+    Opens multiple image previews depending on the length of the input *imgs list.
     The preview is terminated by pressing the 'q' key.
 
     Parameters
@@ -98,6 +121,18 @@ def show_images(*imgs, scale=1, window_name='Image preview'):
 
 
 def show_camera_window(*imgs, scale=1):
+    """
+    Opens input images in separate windows.
+    Parameters
+    ----------
+    *imgs : list
+        Arbitrary number of images to be shown.
+    scale : double
+        Scale of shown image window.
+    Returns
+    -------
+    None
+    """
     def print_xy(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONUP:
             print('x = %d, y = %d' % (x, y))
@@ -115,10 +150,11 @@ def show_camera_window(*imgs, scale=1):
 
 
 def rotated_rectangle(image, idx):
-    ''' Draws rotated rectangle into the image from indexes of binary image.
+    """
+    Draws rotated rectangle into the image from indexes of binary image.
     You can get the indexes of objects from binary image using cv2.findNonZero().
     Input image is not modified.
-    '''
+    """
     res = image.copy()
     rect = cv2.minAreaRect(idx)
     box = cv2.boxPoints(rect)
@@ -128,6 +164,29 @@ def rotated_rectangle(image, idx):
 
 
 def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thickness):
+    """
+    Draws rotated text into the image.
+    Parameters
+    ----------
+    img : ndarray
+        Input image.
+    text : string
+        Text to be drawn.
+    point : tuple
+        Point where text is drawn.
+    angle : double
+        Angle of rotation.
+    text_scale : double
+        Scale of text.
+    text_color : tuple
+        Color of text.
+    text_thickness : int
+        Thickness of text.
+    Returns
+    -------
+    Output image.
+    """
+
     img_filled = np.full(img.shape, text_color, dtype=np.uint8)
     # create rotated text mask
     text_mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
@@ -142,6 +201,28 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
 
 
 def draw_real_sizes(img, rect, width_text, height_text, lbl_size_scale=2, lbl_color=(0, 0, 255), lbl_thickness=8):
+    """
+    Draws real sizes of rotated rectangle into the image.
+    Parameters
+    ----------
+    img : ndarray
+        Input image.
+    rect : tuple
+        Rotated rectangle.
+    width_text : string
+        Width of the rectangle in the form of string.
+    height_text : string
+        Height of the rectangle in the form of string.
+    lbl_size_scale : double
+        Scale of text.
+    lbl_color : tuple
+        Color of text.
+    lbl_thickness : int
+        Thickness of text.
+    Returns
+    -------
+    Output image.
+    """
     tl, tr, br, bl = order_points(cv2.boxPoints(rect))
     mid_pt_width = midpoint(tl, tr)
     mid_pt_height = midpoint(tr, br)

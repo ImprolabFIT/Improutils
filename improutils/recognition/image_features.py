@@ -7,8 +7,8 @@ from improutils import find_contours
 
 class ShapeDescriptors:
     """
-    An internal class for shape descriptors.
-    If you are an user, you shall not call not nor work with the class directly
+    An internal class for computing shape descriptors.
+    Not to be used by the programmer.
     """
     def form_factor(area, perimeter):
         return (4 * np.pi * area) / (perimeter * perimeter)
@@ -31,67 +31,35 @@ class ShapeDescriptors:
     def extent(area, bounding_rectangle_area):
         return area / bounding_rectangle_area;
 
-"""
-An internal, helper function.
-Shall not be called directly by the user.
-This can perform a check for contour validity.
-
-Right now, there is no check for validity, and the function does nothing.
-
-If the contour would be invalid, a ValueError shall be risen
-
-Parameters
-----------
-contour : ndarray
-    One contour.
-
-Returns
--------
-
-Throws
--------
-_ : a ValueError exception if ???
-"""
-def _validateContourGiven(contour):
-    return;
-
-"""
-Aka Špičatost.
-Allows to determine the form factor of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
-
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def form_factor(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "špičatost".
+    Allows to determine the contour's form factor.
+
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+
+    """
+
     return ShapeDescriptors.form_factor(cv2.contourArea(contour), cv2.arcLength(contour, True))
 
-"""
-Allows to determine the roundness of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
 
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def roundness(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "kulatost".
+    Allows to determine the contour's roundness.
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     area = cv2.contourArea(contour)
     _, radius = cv2.minEnclosingCircle(contour)
     r = ShapeDescriptors.roundness(area, 2 * radius)
@@ -99,46 +67,38 @@ def roundness(contour):
         r = 1
     return r
 
-"""
-Allows to determine the aspect ratio of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
 
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def aspect_ratio(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "poměr stran".
+    Allows to determine the contour's aspect ratio.
+
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     dims = cv2.minAreaRect(contour)[1]
     min_diameter = min(dims)
     max_diameter = max(dims)
     return ShapeDescriptors.aspect_ratio(min_diameter, max_diameter)
 
 
-"""
-Allows to determine the convexity of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
-
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def convexity(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "konvexita, vypouklost".
+    Allows to determine the contour's convexity.
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     hull = cv2.convexHull(contour, None, True, True)
     per = cv2.arcLength(contour, True)
     conv_per = cv2.arcLength(hull, True)
@@ -148,23 +108,18 @@ def convexity(contour):
     return r
 
 
-"""
-Allows to determine the solidity of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
-
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def solidity(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "plnost, celistvost".
+    Allows to determine the contour's solidity.
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     hull = cv2.convexHull(contour, None, True, True)
     area = cv2.contourArea(contour)
     conv_area = cv2.contourArea(hull)
@@ -173,23 +128,18 @@ def solidity(contour):
     return r
 
 
-"""
-Allows to determine the compactness of the contour given
-Parameters
-----------
-contour : ndarray
-    The contour. You can get it by calling
-    _, _, contours = improutils.find_contours()
-    Then that one contours is contours[i] where i is index of your choice.
-
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def compactness(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "kompaktnost, hutnost".
+    Allows to determine the contour's compactness.
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     area = cv2.contourArea(contour)
     max_diameter = max(cv2.minAreaRect(contour)[1])
     r = ShapeDescriptors.compactness(area, max_diameter)
@@ -197,22 +147,18 @@ def compactness(contour):
     return r
 
 
-"""
-Allows to determine the extent of the contour given
-Parameters
-----------
-contour : ndarray
-    binary image. This image contains only black and white values.
-    Traditionally, you get it from the segmentation process.
-
-Returns
--------
-_ : number
-    The number, describing the contour property
-
-"""
 def extent(contour):
-    _validateContourGiven(contour)
+    """
+    Aka "dosah, rozměrnost".
+    Allows to determine the contour's extent.
+    Parameters
+    ----------
+    contour : ndarray
+    Returns
+    -------
+    The number, describing the contour's property
+    """
+
     area = cv2.contourArea(contour)
     w, h = cv2.minAreaRect(contour)[1]
     return ShapeDescriptors.extent(area, w * h)
