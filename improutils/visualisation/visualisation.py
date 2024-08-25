@@ -234,3 +234,25 @@ def draw_real_sizes(img, rect, width_text, height_text, lbl_size_scale=2, lbl_co
     result = draw_rotated_text(img, width_text, pt_label_first, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
     result = draw_rotated_text(result, height_text, pt_label_second, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
     return result
+
+
+def color_picker(img):
+    img = img.copy()
+    window_name = "color picker"
+    colors = []
+    def on_mouse_click(event, x, y, _, img):
+        if event == cv2.EVENT_LBUTTONUP:
+            colors.append(img[y,x].tolist())
+            cv2.putText(img, f"Point {len(colors)}: {colors[-1]}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
+            print(f"Point {len(colors)}: {colors[-1]}")
+
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
+    cv2.setMouseCallback(window_name, on_mouse_click, img)
+
+    while True:
+        cv2.imshow(window_name, img)
+        k = cv2.waitKey(0)
+        if k == ord('q') or k == ord('Q') or k == 27:
+            break
+
+    cv2.destroyAllWindows()
