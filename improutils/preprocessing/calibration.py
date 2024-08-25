@@ -27,7 +27,7 @@ def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_del
         Delay in ms between shown images.
     Returns
     -------
-    A tuple of camera matrix, distance coefficients, list of images with correctly detected chessboard corners.
+    A tuple of camera matrix, distance coefficients and list of images with correctly detected chessboard corners.
     """
 
     cap = cv2.VideoCapture(input_source)
