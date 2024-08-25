@@ -1,3 +1,0 @@
- - recognition, shape descriptor functions (`\recognition\image_features.py`) no longer take binary image as an argument. Now, they require a specific contour as an argument
-   - **these changes are no longer backwards compatible**
- - increment the version, as these changes are no longer backwards compatible

@@ -27,7 +27,7 @@ def __GRAY2BGR(img):
             pass
     
     return img, False
-    
+
 
 def qr_init_reader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift_jis'):
     """
@@ -54,7 +54,7 @@ def qr_init_reader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift_
         Initialized QR code reader.
     """  
     return QReader(model_size = model_size, min_confidence = min_confidence, reencode_to = reencode_to)
-    
+
 
 def qr_detect_and_decode(img, return_detections = False, is_bgr = True, reader = qr_init_reader()):
     """
@@ -81,6 +81,7 @@ def qr_detect_and_decode(img, return_detections = False, is_bgr = True, reader =
     # if the image is in grayscale, convert it to BGR
     img, converted  = __GRAY2BGR(img)  
     return reader.detect_and_decode(img, return_detections = return_detections, is_bgr = is_bgr if converted == False else True)
+
 
 def qr_decode(img, detection_result, is_bgr = True, reader = qr_init_reader()):
                 
@@ -114,6 +115,7 @@ def qr_decode(img, detection_result, is_bgr = True, reader = qr_init_reader()):
         # decode expects RGB images
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return reader.decode(img, detection_result)
+
 
 def qr_detect(img, is_bgr = True, reader = qr_init_reader()):
     """

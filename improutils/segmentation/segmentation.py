@@ -3,13 +3,18 @@ import cv2
 
 def apply_mask(img, mask_bin):
     """
-    Masks colored image with binary mask. Output image is just logical AND between two images.
+    Applies binary mask on the image.
+    Parameters
+    ----------
+    img : ndarray
+        Input image.
+    mask_bin : ndarray
+        Binary mask to be applied.
+    Returns
+    -------
+    Masked image.
     """
     return cv2.bitwise_and(img, img, mask=mask_bin)
-
-
-def logical_and(bin_im, bin_mask):
-    return cv2.bitwise_and(bin_im, bin_mask)
 
 
 def to_intensity(hue_angle):

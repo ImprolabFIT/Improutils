@@ -21,7 +21,7 @@ def filtration_box(img, filter_size):
 
 def filtration_median(img, filter_size):
     """
-    Filters image noise using median algorithm
+    Filters image noise using median blur algorithm
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def filtration_gauss(img, filter_size, sigma_x):
 
 def apply_fft(image):
     """
-    Applies FFT on image given.
+    Applies FFT on the image.
 
     Parameters
     ----------

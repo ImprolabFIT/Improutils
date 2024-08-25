@@ -73,8 +73,9 @@ def copy_to(src, dst, mask):
     return dst
 
 def reindex_image_files(source_dir, output_dir=None):
-    """ Reads all images in source_dir and based on they original order,
-    change their filename to be continuous integer (starting from 0).
+    """
+    Reads all images in source_dir and based on they original order,
+    changes their filename to be continuous integer (starting from 0).
     Then, they can be easily read by cv2.VideoCapture. Image format is kept.
 
     Parameters
