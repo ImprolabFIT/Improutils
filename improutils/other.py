@@ -18,8 +18,6 @@ def midpoint(ptA, ptB):
     The 2D midpoint
     """
 
-    if(len(ptA) != 2 or len(ptB) != 2):
-        raise ValueError("Ivalid input point format");
     return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 def artificial_circle_image(size):
