@@ -7,6 +7,10 @@ version: 2
 # Set the OS, Python version and other tools you might need
 build:
   os: ubuntu-22.04
+  apt_packages:
+    - python3-opencv
+    - tesseract-ocr
+    - libzbar0
   tools:
     python: "3.8"
 
