@@ -39,7 +39,7 @@ deploy_github:
    - ssh-keyscan github.com >> ~/.ssh/known_hosts
    - git remote remove github || true
    - git remote add github git@github.com:ImprolabFIT/Improutils.git
-   - git -c core.sshCommand="ssh -v" push --force --follow-tags github HEAD:${CI_COMMIT_BRANCH}
+   - git -c core.sshCommand="ssh -v" push --force --follow-tags -u github HEAD:${CI_COMMIT_BRANCH}
 
 deploy_staging:
   stage: deploy-pypi
