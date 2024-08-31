@@ -32,7 +32,8 @@ deploy_github:
    - git remote remove github || true
    - git remote add github git@github.com:ImprolabFIT/Improutils.git
    - git checkout ${CI_COMMIT_REF_NAME}
-   - git -c core.sshCommand="ssh -v" push --force --follow-tags -u github ${CI_COMMIT_BRANCH}
+   - git -c core.sshCommand="ssh -v" push --force -u github HEAD:${CI_COMMIT_BRANCH}
+   - git -c core.sshCommand="ssh -v" push --tags github || true
 
 deploy_staging:
   stage: deploy-pypi
