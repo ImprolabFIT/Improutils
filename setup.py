@@ -35,6 +35,8 @@ setuptools.setup(
         "natsort>=5.3.3",
         "PyYAML>=5.3.1",
         "qreader>=3.11",
+        "sphinx",
+        "sphinx_rtd_theme"
       ],
     python_requires='>=3.8',
 )

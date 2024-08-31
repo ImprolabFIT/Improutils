@@ -25,3 +25,18 @@ python tests\test_preprocessing.py
 ```
 
 > Note: running the test from the `tests` directory itself will result in errors
+
+## Documentation
+This project uses Sphinx for documentation. The documentation is hosted on TBA.
+
+Building documentation locally
+```bash
+pip install sphinx sphinx_rtd_theme
+cd docs
+make html
+```
+
+Browsing the documentation locally:
+```bash
+python3 -m http.server -d docs/html
+```
