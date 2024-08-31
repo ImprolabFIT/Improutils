@@ -34,7 +34,7 @@ setuptools.setup(
         "wheel",
         "natsort>=5.3.3",
         "PyYAML>=5.3.1",
-        "qreader>=3.11",
+        "qreader==3.12",
         "sphinx",
         "sphinx_rtd_theme"
       ],
