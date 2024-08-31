@@ -76,12 +76,12 @@ def show_images(*imgs, scale=1, window_name='Image preview'):
     """
     This function is deprecated. Use plot_images instead.
     
-    Opens multiple image previews depending on the length of the input *imgs list.
+    Opens multiple image previews depending on the length of the input \*imgs list.
     The preview is terminated by pressing the 'q' key.
 
     Parameters
     ----------
-    *imgs : list
+    \*imgs : list
         Multiple input images which have to be shown.
     scale : double
         Scale of shown image window.

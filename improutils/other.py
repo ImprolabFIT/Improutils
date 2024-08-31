@@ -112,6 +112,7 @@ def pcd_to_depth(pcd, height, width):
 def create_file_path(folder, file_name):
     """
     Easier defined function to create path for filename inside a folder.
+
     Parameters
     ----------
     folder : string
