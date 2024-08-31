@@ -15,7 +15,7 @@ build_docs:
     - cd docs
     - make html
 
-test_install:
+test_units:
   stage: test
   script:
     - apt-get update

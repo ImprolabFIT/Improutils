@@ -30,6 +30,7 @@ setuptools.setup(
         "matplotlib>=3.4.2",
         "opencv-python>=4.5.3.56",
         "Pylon>=0.4.4",
+        "pypylon",
         "pytesseract>=0.3.7",
         "wheel",
         "natsort>=5.3.3",
