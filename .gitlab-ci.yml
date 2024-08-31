@@ -1,20 +1,24 @@
 image: python:3.9-slim
 
 stages:
+  - build
   - test
   - deploy
 
-before_script:
-   - pip install twine
-   - python setup.py sdist
+build_docs:
+  stage: build
+  script:
+    - apt-get update
+    - apt-get -y install build-essential
+    - pip install sphinx sphinx_rtd_theme
+    - cd docs
+    - make html
 
 test_install:
   stage: test
   script:
     - apt-get update
-    - apt-get install -y python3-opencv
-    - apt-get install -y tesseract-ocr
-    - apt-get install -y libzbar0
+    - apt-get install -y python3-opencv tesseract-ocr libzbar0
     - pip install .
     - python -m unittest discover -s tests
 
@@ -25,10 +29,11 @@ deploy_staging:
     TWINE_USERNAME: $PYPI_USER
     TWINE_PASSWORD: $PYPI_TOKEN_TEST
   script:
+    - pip install twine
+    - python setup.py sdist
     - twine upload --repository testpypi dist/* --verbose
   only:
     - master
-
 
 deploy_production:
   stage: deploy
@@ -36,6 +41,8 @@ deploy_production:
     TWINE_USERNAME: $PYPI_USER
     TWINE_PASSWORD: $PYPI_TOKEN_PROD
   script:
+    - pip install twine
+    - python setup.py sdist
     - version=$(python setup.py --version)
     - twine upload dist/* --verbose
   only:
