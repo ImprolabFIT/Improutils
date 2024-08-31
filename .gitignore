@@ -8,3 +8,5 @@ dist/
 .idea/
 /out/
 venv
+
+docs/_build/

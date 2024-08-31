@@ -4,8 +4,6 @@ import cv2
 def contour_to_image(contour, image, size=None):
     """
     Creates a new image from the contour.
-    It's similar to contour cropping but it's not that fast.
-    It does not suffer from the known error if the contour is irregulary shaped.
 
     Parameters
     ----------
@@ -104,8 +102,7 @@ def get_center(contour):
         input contour.
     Returns
     -------
-    _ : tuple
-        Center in pixels in tuple format.
+    A tuple with x and y coordinates of the contour's center.
     """
     M = cv2.moments(contour)
     cX = int(M['m10'] / M['m00'])

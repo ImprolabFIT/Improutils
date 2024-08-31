@@ -1,41 +1,69 @@
-image: python:3.9-slim
-
 stages:
+  - build
   - test
-  - deploy
+  - deploy-github
+  - deploy-pypi
 
-before_script:
-   - pip install twine
-   - python setup.py sdist
-
-test_install:
-  stage: test
+build_docs:
+  stage: build
+  image: python:3.9-slim
   script:
     - apt-get update
-    - apt-get install -y python3-opencv
-    - apt-get install -y tesseract-ocr
-    - apt-get install -y libzbar0
+    - apt-get install -y python3-opencv tesseract-ocr libzbar0
+    - apt-get -y install build-essential
+    - pip install .
+    - python3 -c "from improutils import *"
+    - cd docs
+    - make html
+
+test_units:
+  stage: test
+  image: python:3.9-slim
+  script:
+    - apt-get update
+    - apt-get install -y python3-opencv tesseract-ocr libzbar0
     - pip install .
     - python -m unittest discover -s tests
 
+deploy_github:
+  stage: deploy-github
+  image:
+    name: alpine/git:latest
+    entrypoint: [""]
+  script:
+   - mkdir -p ~/.ssh
+   - echo "${GITHUB_MIRROR_PRIVATE_SSH_KEY}" > ~/.ssh/improutils_mirror
+   - chmod 600 ~/.ssh/improutils_mirror
+   - eval $(ssh-agent -s)
+   - echo "" | ssh-add ~/.ssh/improutils_mirror
+   - ssh-keyscan github.com >> ~/.ssh/known_hosts
+   - git remote remove github || true
+   - git remote add github git@github.com:ImprolabFIT/Improutils.git
+   - git -c core.sshCommand="ssh -v" push --force --follow-tags github HEAD:${CI_COMMIT_BRANCH}
+
 deploy_staging:
-  stage: deploy
+  stage: deploy-pypi
+  image: python:3.9-slim
   variables:
     TARGET_ENV: "stage"
     TWINE_USERNAME: $PYPI_USER
     TWINE_PASSWORD: $PYPI_TOKEN_TEST
   script:
+    - pip install twine
+    - python setup.py sdist
     - twine upload --repository testpypi dist/* --verbose
   only:
     - master
 
-
 deploy_production:
-  stage: deploy
+  stage: deploy-pypi
+  image: python:3.9-slim
   variables:
     TWINE_USERNAME: $PYPI_USER
     TWINE_PASSWORD: $PYPI_TOKEN_PROD
   script:
+    - pip install twine
+    - python setup.py sdist
     - version=$(python setup.py --version)
     - twine upload dist/* --verbose
   only:

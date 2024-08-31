@@ -1,5 +1,7 @@
 __version__ = "1.1.17"
 
+import os
+
 if os.environ.get('TARGET_ENV'):
     __version__ = __version__ + "-" + os.environ['CI_JOB_ID']
 

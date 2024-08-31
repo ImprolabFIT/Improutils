@@ -27,7 +27,7 @@ def __GRAY2BGR(img):
             pass
     
     return img, False
-    
+
 
 def qr_init_reader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift_jis'):
     """
@@ -40,12 +40,12 @@ def qr_init_reader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift_
         The size of the model to use. It can be 'n' (nano), 's' (small), 'm' (medium) or 'l' (large). Larger models are more accurate but slower. Defaults to 's'.
     min_confidence : float 
         The minimum confidence of the QR detection to be considered valid. Values closer to 0.0 can get more False Positives, while values closer to 1.0 can lose difficult QRs. Default (and recommended): 0.5.
-    reencode_to : str | None 
-        The encoding to reencode the utf-8 decoded QR string. 
-        If None, it won't re-encode. 
-        If you find some characters being decoded incorrectly, try to set a Code Page (https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. 
-        Recommendations that have been found useful:
-            'shift-jis' for Germanic languages
+    reencode_to : str | None
+        The encoding to reencode the utf-8 decoded QR string.\
+        If None, it won't re-encode.\
+        If you find some characters being decoded incorrectly, try to set a Code Page (https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset.\
+        Recommendations that have been found useful:\
+            'shift-jis' for Germanic languages\
             'cp65001' for Asian languages  Defaults to 'shift_jis'.
 
     Returns
@@ -54,7 +54,7 @@ def qr_init_reader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift_
         Initialized QR code reader.
     """  
     return QReader(model_size = model_size, min_confidence = min_confidence, reencode_to = reencode_to)
-    
+
 
 def qr_detect_and_decode(img, return_detections = False, is_bgr = True, reader = qr_init_reader()):
     """
@@ -81,6 +81,7 @@ def qr_detect_and_decode(img, return_detections = False, is_bgr = True, reader =
     # if the image is in grayscale, convert it to BGR
     img, converted  = __GRAY2BGR(img)  
     return reader.detect_and_decode(img, return_detections = return_detections, is_bgr = is_bgr if converted == False else True)
+
 
 def qr_decode(img, detection_result, is_bgr = True, reader = qr_init_reader()):
                 
@@ -115,6 +116,7 @@ def qr_decode(img, detection_result, is_bgr = True, reader = qr_init_reader()):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return reader.decode(img, detection_result)
 
+
 def qr_detect(img, is_bgr = True, reader = qr_init_reader()):
     """
     Detects QR codes in the image and returns a tuple of dictionaries with all the detection information.
@@ -128,7 +130,7 @@ def qr_detect(img, is_bgr = True, reader = qr_init_reader()):
         If True, the received image is expected to be BGR instead of RGB. Defaults to True.
     reader : QReader 
         Initialized QReader class, use qr_init_reader(model_size, min_confidence, reencode_to) with different parameters if you wish. Defaults to qr_init_reader().
-        
+
     Returns
     -------
     detections : tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]: 

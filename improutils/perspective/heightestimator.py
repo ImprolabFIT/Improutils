@@ -1,12 +1,11 @@
 from .coordconversion import _calc_alfa_metric_factor
 from .coordconversion import *
 
-"""
-Allows to estimate real world object height based on two points (top and bottom) measured
-on image plane.
-"""
 class HeightEstimator:
-
+    """
+    Allows to estimate real world object height based on two points (top and bottom) measured
+    on image plane.
+    """
     def __init__(self, ref_measurements, vl, vz):
         self._vanish_line = vl
         self._vert_vanish_point = vz
