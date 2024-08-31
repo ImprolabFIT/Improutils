@@ -1,10 +1,9 @@
 stages:
   - build
-  - test
   - deploy-github
   - deploy-pypi
 
-build_docs:
+build:
   stage: build
   image: python:3.9-slim
   script:
@@ -15,14 +14,7 @@ build_docs:
     - python3 -c "from improutils import *"
     - cd docs
     - make html
-
-test_units:
-  stage: test
-  image: python:3.9-slim
-  script:
-    - apt-get update
-    - apt-get install -y python3-opencv tesseract-ocr libzbar0
-    - pip install .
+    - cd ..
     - python -m unittest discover -s tests
 
 deploy_github:
@@ -39,7 +31,8 @@ deploy_github:
    - ssh-keyscan github.com >> ~/.ssh/known_hosts
    - git remote remove github || true
    - git remote add github git@github.com:ImprolabFIT/Improutils.git
-   - git -c core.sshCommand="ssh -v" push --force --follow-tags github HEAD:${CI_COMMIT_BRANCH}
+   - git checkout ${CI_COMMIT_REF_NAME}
+   - git -c core.sshCommand="ssh -v" push --force --follow-tags -u github ${CI_COMMIT_BRANCH}
 
 deploy_staging:
   stage: deploy-pypi
