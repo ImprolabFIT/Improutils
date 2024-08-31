@@ -27,7 +27,7 @@ python tests\test_preprocessing.py
 > Note: running the test from the `tests` directory itself will result in errors
 
 ## Documentation
-This project uses Sphinx for documentation. The documentation is hosted on TBA.
+This project uses Sphinx for documentation. The documentation is available on [Read the Docs](https://improutils.readthedocs.io/en/master/).
 
 Building documentation locally
 ```bash
