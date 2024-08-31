@@ -31,7 +31,6 @@ deploy_github:
     name: alpine/git:latest
     entrypoint: [""]
   script:
-   - touch /dev/tty
    - mkdir -p ~/.ssh
    - echo "${GITHUB_MIRROR_PRIVATE_SSH_KEY}" > ~/.ssh/improutils_mirror
    - chmod 600 ~/.ssh/improutils_mirror
