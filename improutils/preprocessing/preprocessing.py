@@ -239,10 +239,9 @@ def polar_warp(img, full_radius=True, inverse=False):
         radius = center[0]
 
     method = cv2.WARP_FILL_OUTLIERS
-    size = None
+    size = img.shape[:2]
     if inverse:
         method += cv2.WARP_INVERSE_MAP
-        size = img.shape[:2]
     dest = cv2.warpPolar(img, size, center, radius, method)
     return dest
 
