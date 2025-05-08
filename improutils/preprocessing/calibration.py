@@ -9,7 +9,7 @@ from improutils.visualisation import plot_images
 IDX_CAM_MATRIX = "camera_matrix"
 IDX_DIST_COEFFS = "dist_coefs"
 
-def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_delay=1):
+def camera_calib(input_source, chess_shape, output_calib_file=None):
     """
     Browses all images found in input_source and on each image tries to find chessboard corners.
     If chessboard corners are found, image corespondences with real world space are added to lists.
@@ -23,8 +23,6 @@ def camera_calib(input_source, chess_shape, output_calib_file=None, img_show_del
         Number of inner corners per a chessboard row and column.
     output_calib_file : Optional[string]
         Output file where calibration is saved when neccesary.
-    img_show_delay : int
-        Delay in ms between shown images.
     Returns
     -------
     A tuple of camera matrix, distance coefficients and list of images with correctly detected chessboard corners.
