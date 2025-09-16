@@ -2,6 +2,11 @@ import numpy as np
 import cv2
 import os
 import matplotlib.pyplot as plt
+from ipywidgets import interact, interactive, fixed, interact_manual
+import ipywidgets as widgets
+from IPython.display import display
+
+# vizualization of distortion parameters influence
 
 def _plot_grid(xv, yv, squares, ax):
     for i  in np.linspace(0, xv.shape[1] - 1, squares+1, dtype=int):
@@ -72,3 +77,79 @@ def plot_distortion(k1:float,k2:float,k3:float,k4:float,k5:float,k6:float, p1:fl
     _plot_grid(xv_radial + xv_tang, yv_radial + yv_tang, squares, axs[2])
     axs[2].set_title('Compounded distortion grid')
     plt.show()
+
+# interacitve finding of multicolor segmentation thresholds
+
+def create_slider(min, max, description):
+    description = description.ljust(30, '\xa0')
+    return widgets.IntRangeSlider( min=min, max=max, step=1,value=[min,max], 
+                                   description=description, 
+                                   continuous_update=False, 
+                                   orientation='horizontal',
+                                   style=dict(description_width='initial'),
+                                   layout=widgets.Layout(width='auto'),
+                                  )
+    
+def multicolor_segmentation(func,colors):
+    """ Allows interactive HSV thresholding for multiple colors with saving and returning thresholds that are picked by the user.
+    
+    Parameters
+    ----------
+    func : function
+        function with arguments hue = h_range (int, range: 0-360), saturation = s_range (int, range: 0-255), value = v_range (int, range: 0-255)
+    colors : list
+        list of colors that the user can choose from, e.g. ['red', 'green', 'blue'], these colors will be used as keys in the output dictionary
+    Returns
+    -------
+    color_thresholds: dict
+        Returns a dictionary with the chosen thresholds for each color, e.g. {'red': (0, 0, 0), 'green': (0, 0, 0), 'blue': (0, 0, 0)}, can be also empty if no thresholds were saved
+    """
+    color_thresholds = {}
+    
+    # initialize sliders, buttons etc.
+    h_slider=create_slider(min=0, max=360, description='Hue:')
+    s_slider=create_slider(min=0, max=255, description='Saturation:')
+    v_slider=create_slider(min=0, max=255, description='Value:')
+    
+    color_dropdown = widgets.Dropdown(options=colors, description='Color:'.ljust(30, '\xa0'), style ={'description_width': 'initial'},layout = {'width': 'max-content'})
+    
+    save_button = widgets.Button(description='Save threshold for color',layout=widgets.Layout(width='auto'),button_style='success')
+    finish_button = widgets.Button(description='Return saved thresholds',layout=widgets.Layout(width='auto'),button_style='danger')
+    
+    text_output = widgets.Output()
+    interactive_output = widgets.interactive_output(func,{'h_range':h_slider,'s_range':s_slider,'v_range':v_slider})
+    
+    # widget layout
+    input_box = widgets.VBox([h_slider,s_slider,v_slider,color_dropdown])
+    button_box = widgets.HBox([save_button, finish_button])
+    other_box = widgets.VBox([text_output, interactive_output])
+    
+    def reset_sliders():
+        h_slider.value = (0,360)
+        s_slider.value = (0,255)
+        v_slider.value = (0,255)
+    
+    # button callbacks
+    def on_save_clicked(b):
+        with text_output:
+            text_output.clear_output()
+            color_thresholds[color_dropdown.value] = (h_slider.value, s_slider.value, v_slider.value)
+            print(f"Saved for color '{color_dropdown.value}', threshold: {color_thresholds[color_dropdown.value]}\nResetting sliders...\nChanging to next color...")
+            reset_sliders()
+            # set next color in dropdown
+            color_dropdown.value = colors[(colors.index(color_dropdown.value)+1)%len(colors)]
+        
+    
+    def on_finish_clicked(b):
+        with text_output:
+            text_output.clear_output()
+            print('Returned saved thresholds!')
+            reset_sliders()
+                
+    
+    save_button.on_click(on_save_clicked)
+    finish_button.on_click(on_finish_clicked)
+    # display widget
+    display(input_box, button_box,other_box)
+
+    return color_thresholds
