@@ -89,7 +89,8 @@ def create_slider(min, max, description):
                                    style=dict(description_width='initial'),
                                    layout=widgets.Layout(width='auto'),
                                   )
-    
+
+
 def multicolor_segmentation(func,colors):
     """ Allows interactive HSV thresholding for multiple colors with saving and returning thresholds that are picked by the user.
     

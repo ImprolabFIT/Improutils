@@ -109,3 +109,37 @@ def get_center(contour):
     cY = int(M['m01'] / M['m00'])
 
     return cX, cY
+
+def find_holes(img_bin,min_area = 0, max_area=1000000,fill = True):
+    """
+    Finds inner contours of holes in binary image and filters them using their area. Then it draws binary image from filtered contours. It counts contours as well.
+
+    Parameters
+    ----------
+    img_bin : ndarray
+        Input binary image.
+    min_area : int
+        Size of contour that is used to filter all smaller contours out.
+    max_area : int
+        Size of contour that is used to filter all larger contours out.
+    Returns
+    -------
+    contour_drawn : ndarray
+        Output binary image with drawn filled filtered contours.
+    count : int
+        Number of found and filtered contours.
+    contours : list
+        Found contours.
+    """
+
+    contours, hierarchy = cv2.findContours(img_bin,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
+    # filter out only hole contours (contours that are inside another contour)
+    # for more info about hierarchy retrieval modes visit: https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
+    hole_indices = [ i for i in range(len(hierarchy[0])) if hierarchy[0,i,-1] != -1]    
+    # filter out contours by area
+    contours = [contours[hole_index] for hole_index in hole_indices if min_area < cv2.contourArea(contours[hole_index]) <= max_area]
+    # draw contours
+    thick = cv2.FILLED
+    if not fill: thick = 2
+    contours_drawn = cv2.drawContours(np.zeros(img_bin.shape, dtype=np.uint8), contours, -1, color=(255, 255, 255),thickness=thick)
+    return contours_drawn, len(contours), contours
