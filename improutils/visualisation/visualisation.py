@@ -256,3 +256,22 @@ def color_picker(img):
             break
 
     cv2.destroyAllWindows()
+
+def draw_lines(img, lines):
+    """
+    Helper function for drawing lines coming from  HoughLines procedure into image
+    Parameters
+    ----------
+    img : ndarray
+        Input image.
+    lines : ndarray
+        array of lines - output of cv2.HoughLines.
+        -------
+    Output image."""
+    img_lines = to_3_channels(img)
+
+    for line in lines:
+        l = line[0]
+        cv.line(img_lines, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 2, cv.LINE_AA)
+
+    return img_lines

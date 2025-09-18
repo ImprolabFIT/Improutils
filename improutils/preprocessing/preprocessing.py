@@ -216,7 +216,7 @@ def rotate(image, angle, image_center=None):
     dest = cv2.warpAffine(image, rotation_mat, (bound_w, bound_h))
     return dest
 
-def polar_warp(img, full_radius=True, inverse=False):
+def polar_warp(img, size = None, full_radius=True, inverse=False):
     """
     Polar warp help function
 
@@ -224,12 +224,14 @@ def polar_warp(img, full_radius=True, inverse=False):
     ----------
     img : TYPE
         Image to be rotated.
+    size : TYPE
+        size of dest img, most common values: None, img.shape[:2] 
     full_radius : TYPE
     inverse : TYPE
     Returns
     -------
     TYPE
-        DESCRIPTION.
+        warped image.
     """
     center = (img.shape[0] / 2.0, img.shape[1] / 2.0)
 
@@ -239,17 +241,15 @@ def polar_warp(img, full_radius=True, inverse=False):
         radius = center[0]
 
     method = cv2.WARP_FILL_OUTLIERS
-    size = img.shape[:2]
+  
     if inverse:
         method += cv2.WARP_INVERSE_MAP
     dest = cv2.warpPolar(img, size, center, radius, method)
     return dest
 
+def warp_to_polar(img,size = None, full_radius=True):
+    return polar_warp(img,size, full_radius)
 
 
-def warp_to_cartesian(img, full_radius=True):
-    return polar_warp(img, full_radius)
-
-
-def warp_to_polar(img, full_radius=True):
-    return polar_warp(img, full_radius, True)
+def warp_to_cartesian(img,size=None, full_radius=True):
+    return polar_warp(img,size, full_radius, True)
