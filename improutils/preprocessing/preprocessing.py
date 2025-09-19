@@ -1,5 +1,6 @@
-import numpy as np
 import cv2
+import numpy as np
+
 
 def to_gray(img_bgr):
     """
@@ -92,7 +93,7 @@ def normalize2BGR_image(img):
     _ : ndarray
         Normalized image in BGR
     """
-    scaled = ((img - img.min()) * (1/(img.max() - img.min()) * 255)).astype('uint8')
+    scaled = ((img - img.min()) * (1 / (img.max() - img.min()) * 255)).astype("uint8")
     return cv2.cvtColor(scaled, cv2.COLOR_GRAY2BGR)
 
 
@@ -132,7 +133,7 @@ def crop_by_bounding_rect(img_bin):
     -------
     Output cropped image.
     """
-    assert len(img_bin.shape) == 2, 'Input image is NOT binary!'
+    assert len(img_bin.shape) == 2, "Input image is NOT binary!"
 
     contours, _ = cv2.findContours(img_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     tl_x, tl_y, w, h = cv2.boundingRect(contours[0])
@@ -140,7 +141,7 @@ def crop_by_bounding_rect(img_bin):
 
 
 def crop_contour(contour, image):
-    """ Crops contour in respect to its bounding rectangle.
+    """Crops contour in respect to its bounding rectangle.
     It's the fastest method, but could include other parts
     of image than just contour if the contour is irregulary shaped.
 
@@ -156,7 +157,7 @@ def crop_contour(contour, image):
     Output cropped image.
     """
     x, y, w, h = cv2.boundingRect(contour)
-    return image[y:y + h, x:x + w]
+    return image[y : y + h, x : x + w]
 
 
 def resize(image, size, method=cv2.INTER_AREA):
@@ -177,7 +178,7 @@ def resize(image, size, method=cv2.INTER_AREA):
     -------
     Output resized image.
     """
-    assert type(size) is tuple, 'Variable size is NOT a tuple!'
+    assert type(size) is tuple, "Variable size is NOT a tuple!"
     return cv2.resize(image, size, method)
 
 
@@ -199,10 +200,10 @@ def rotate(image, angle, image_center=None):
         Returns the rotated input image by specified angle.
     """
     height, width = image.shape[:2]
-    if image_center == None:
+    if image_center is None:
         image_center = (width / 2, height / 2)
 
-    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1.)
+    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
 
     abs_cos = abs(rotation_mat[0, 0])
     abs_sin = abs(rotation_mat[0, 1])
@@ -216,7 +217,8 @@ def rotate(image, angle, image_center=None):
     dest = cv2.warpAffine(image, rotation_mat, (bound_w, bound_h))
     return dest
 
-def polar_warp(img, size = None, full_radius=True, inverse=False):
+
+def polar_warp(img, size=None, full_radius=True, inverse=False):
     """
     Polar warp help function
 
@@ -225,7 +227,7 @@ def polar_warp(img, size = None, full_radius=True, inverse=False):
     img : TYPE
         Image to be rotated.
     size : TYPE
-        size of dest img, most common values: None, img.shape[:2] 
+        size of dest img, most common values: None, img.shape[:2]
     full_radius : TYPE
     inverse : TYPE
     Returns
@@ -241,15 +243,16 @@ def polar_warp(img, size = None, full_radius=True, inverse=False):
         radius = center[0]
 
     method = cv2.WARP_FILL_OUTLIERS
-  
+
     if inverse:
         method += cv2.WARP_INVERSE_MAP
     dest = cv2.warpPolar(img, size, center, radius, method)
     return dest
 
-def warp_to_polar(img,size = None, full_radius=True):
-    return polar_warp(img,size, full_radius)
+
+def warp_to_polar(img, size=None, full_radius=True):
+    return polar_warp(img, size, full_radius)
 
 
-def warp_to_cartesian(img,size=None, full_radius=True):
-    return polar_warp(img,size, full_radius, True)
+def warp_to_cartesian(img, size=None, full_radius=True):
+    return polar_warp(img, size, full_radius, True)

@@ -1,5 +1,6 @@
-import numpy as np
 import cv2
+import numpy as np
+
 
 def contour_to_image(contour, image, size=None):
     """
@@ -24,7 +25,7 @@ def contour_to_image(contour, image, size=None):
         _, _, w, h = cv2.boundingRect(contour)
         size = (w, h)
 
-    assert type(size) is tuple, 'Param size should be a tuple!'
+    assert type(size) is tuple, "Param size should be a tuple!"
     blank = np.zeros_like(image)
     half_x = int(size[0] * 0.5)
     half_y = int(size[1] * 0.5)
@@ -32,7 +33,7 @@ def contour_to_image(contour, image, size=None):
     c = get_center(contour)
     cv2.drawContours(blank, [contour], -1, (255, 255, 255), cv2.FILLED)
 
-    return blank[c[1] - half_y:c[1] + half_y, c[0] - half_x:c[0] + half_x].copy()
+    return blank[c[1] - half_y : c[1] + half_y, c[0] - half_x : c[0] + half_x].copy()
 
 
 def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True):
@@ -61,11 +62,21 @@ def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True
     if not external:
         mode = cv2.RETR_LIST
     contours, _ = cv2.findContours(img_bin, mode, cv2.CHAIN_APPROX_SIMPLE)
-    contours = [c for c in contours if cv2.contourArea(c) > min_area and cv2.contourArea(c) < max_area]
+    contours = [
+        c
+        for c in contours
+        if cv2.contourArea(c) > min_area and cv2.contourArea(c) < max_area
+    ]
     thick = cv2.FILLED
-    if not fill: thick = 2
-    contour_drawn = cv2.drawContours(np.zeros(img_bin.shape, dtype=np.uint8), contours, -1, color=(255, 255, 255),
-                                     thickness=thick)
+    if not fill:
+        thick = 2
+    contour_drawn = cv2.drawContours(
+        np.zeros(img_bin.shape, dtype=np.uint8),
+        contours,
+        -1,
+        color=(255, 255, 255),
+        thickness=thick,
+    )
     return contour_drawn, len(contours), contours
 
 
@@ -105,12 +116,13 @@ def get_center(contour):
     A tuple with x and y coordinates of the contour's center.
     """
     M = cv2.moments(contour)
-    cX = int(M['m10'] / M['m00'])
-    cY = int(M['m01'] / M['m00'])
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
 
     return cX, cY
 
-def find_holes(img_bin,min_area = 0, max_area=1000000,fill = True):
+
+def find_holes(img_bin, min_area=0, max_area=1000000, fill=True):
     """
     Finds inner contours of holes in binary image and filters them using their area. Then it draws binary image from filtered contours. It counts contours as well.
 
@@ -132,14 +144,27 @@ def find_holes(img_bin,min_area = 0, max_area=1000000,fill = True):
         Found contours.
     """
 
-    contours, hierarchy = cv2.findContours(img_bin,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(
+        img_bin, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE
+    )
     # filter out only hole contours (contours that are inside another contour)
     # for more info about hierarchy retrieval modes visit: https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
-    hole_indices = [ i for i in range(len(hierarchy[0])) if hierarchy[0,i,-1] != -1]    
+    hole_indices = [i for i in range(len(hierarchy[0])) if hierarchy[0, i, -1] != -1]
     # filter out contours by area
-    contours = [contours[hole_index] for hole_index in hole_indices if min_area < cv2.contourArea(contours[hole_index]) <= max_area]
+    contours = [
+        contours[hole_index]
+        for hole_index in hole_indices
+        if min_area < cv2.contourArea(contours[hole_index]) <= max_area
+    ]
     # draw contours
     thick = cv2.FILLED
-    if not fill: thick = 2
-    contours_drawn = cv2.drawContours(np.zeros(img_bin.shape, dtype=np.uint8), contours, -1, color=(255, 255, 255),thickness=thick)
+    if not fill:
+        thick = 2
+    contours_drawn = cv2.drawContours(
+        np.zeros(img_bin.shape, dtype=np.uint8),
+        contours,
+        -1,
+        color=(255, 255, 255),
+        thickness=thick,
+    )
     return contours_drawn, len(contours), contours
