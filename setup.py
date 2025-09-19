@@ -37,7 +37,8 @@ setuptools.setup(
         "PyYAML>=5.3.1",
         "qreader==3.12",
         "sphinx",
-        "sphinx_rtd_theme"
+        "sphinx_rtd_theme",
+        "PrettyTable"
       ],
     python_requires='>=3.8',
 )
