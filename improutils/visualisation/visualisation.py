@@ -1,14 +1,19 @@
 import math
-import matplotlib.pyplot as plt
 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import NoNorm, Normalize
 
-from improutils.other import *
-from improutils.acquisition.img_io import copy_to
-from improutils.preprocessing.preprocessing import rotate
+from improutils.acquisition import copy_to
+from improutils.other import midpoint, order_points
+from improutils.preprocessing import rotate
+from improutils.segmentation import to_3_channels
 
 
-def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=True, title_size=32):
+def plot_images(
+    *imgs, titles=[], channels="bgr", normalize=False, ticks_off=True, title_size=32
+):
     """
     Plots multiple images in one figure.
     Parameters
@@ -29,7 +34,9 @@ def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=Tru
     -------
     None
     """
-    assert channels.lower() in ['bgr', 'rgb', 'mono'], 'Possible values for channels are: bgr, rgb or mono!'
+    assert channels.lower() in ["bgr", "rgb", "mono"], (
+        "Possible values for channels are: bgr, rgb or mono!"
+    )
 
     #     f = plt.figure(figsize=(30, 20))
     width_def = 60
@@ -49,33 +56,36 @@ def plot_images(*imgs, titles=[], channels='bgr', normalize=False, ticks_off=Tru
     for i, img in enumerate(imgs, 1):
         ax = f.add_subplot(height, width, i)
         if ticks_off:
-            ax.axis('off')
+            ax.axis("off")
 
         if len(titles) != 0:
             if len(imgs) != len(titles):
-                print('WARNING titles length is not the same as images length!')
+                print("WARNING titles length is not the same as images length!")
 
             try:
-                ax.set_title(str(titles[i - 1]), fontdict={'fontsize': title_size, 'fontweight': 'medium'})
-            except:
+                ax.set_title(
+                    str(titles[i - 1]),
+                    fontdict={"fontsize": title_size, "fontweight": "medium"},
+                )
+            except IndexError:
                 pass
 
-        if channels.lower() == 'mono' or img.ndim == 2:
+        if channels.lower() == "mono" or img.ndim == 2:
             if normalize:
                 norm = Normalize()
             else:
                 norm = NoNorm()
-            ax.imshow(img, cmap=plt.get_cmap('gray'), norm=norm)
-        elif channels.lower() == 'rgb':
+            ax.imshow(img, cmap=plt.get_cmap("gray"), norm=norm)
+        elif channels.lower() == "rgb":
             ax.imshow(img)
         else:
             ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 
-def show_images(*imgs, scale=1, window_name='Image preview'):
+def show_images(*imgs, scale=1, window_name="Image preview"):
     """
     This function is deprecated. Use plot_images instead.
-    
+
     Opens multiple image previews depending on the length of the input \*imgs list.
     The preview is terminated by pressing the 'q' key.
 
@@ -98,11 +108,11 @@ def show_images(*imgs, scale=1, window_name='Image preview'):
 
     def print_xy(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONUP:
-            print('x = %d, y = %d' % (x, y))
+            print("x = %d, y = %d" % (x, y))
 
     for i, img in enumerate(imgs, 1):
         h, w = img.shape[:2]
-        window_name_id = window_name + ' ' + str(i)
+        window_name_id = window_name + " " + str(i)
         cv2.namedWindow(window_name_id, cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
         cv2.resizeWindow(window_name_id, int(w * scale), int(h * scale))
         cv2.setMouseCallback(window_name_id, print_xy)
@@ -110,11 +120,11 @@ def show_images(*imgs, scale=1, window_name='Image preview'):
 
     while 1:
         for i, img in enumerate(imgs, 1):
-            cv2.imshow(window_name + ' ' + str(i), img)
+            cv2.imshow(window_name + " " + str(i), img)
 
         k = cv2.waitKey(0)
 
-        if k == ord('q') or k == ord('Q') or k == 27:
+        if k == ord("q") or k == ord("Q") or k == 27:
             break
 
     cv2.destroyAllWindows()
@@ -133,12 +143,13 @@ def show_camera_window(*imgs, scale=1):
     -------
     None
     """
+
     def print_xy(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONUP:
-            print('x = %d, y = %d' % (x, y))
+            print("x = %d, y = %d" % (x, y))
 
     for i, img in enumerate(imgs, 1):
-        window_name_id = 'Camera capture' + ' ' + str(i)
+        window_name_id = "Camera capture" + " " + str(i)
 
         h, w = img.shape[:2]
         cv2.namedWindow(window_name_id, cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
@@ -149,16 +160,27 @@ def show_camera_window(*imgs, scale=1):
         cv2.imshow(window_name_id, img)
 
 
-def rotated_rectangle(image, idx):
+def draw_rotated_rect(img, cnt):
     """
-    Draws rotated rectangle into the image from indexes of binary image.
-    You can get the indexes of objects from binary image using cv2.findNonZero().
+    Draws rotated rectangle with minimum area into the image, around the contour.
     Input image is not modified.
+    Parameters
+    ----------
+    img : ndarray
+        Input image.
+    cnt : ndarray
+        Contour around which the rectangle will be drawn
+    Returns
+    -------
+    res : ndarray
+        Image with drawn rectangle on it.
+    rect : ndarray
+        rectangle from cv2.minAreaRect
     """
-    res = image.copy()
-    rect = cv2.minAreaRect(idx)
+    res = img.copy()
+    rect = cv2.minAreaRect(cnt)
     box = cv2.boxPoints(rect)
-    box = np.int0(box)
+    box = np.array(box).astype(np.int32)
     cv2.drawContours(res, [box], -1, (255, 255, 255), 1)
     return res, rect
 
@@ -190,7 +212,15 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
     img_filled = np.full(img.shape, text_color, dtype=np.uint8)
     # create rotated text mask
     text_mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
-    cv2.putText(text_mask, "{:.2f} cm".format(text), point, 0, text_scale, (255, 255, 255), text_thickness)
+    cv2.putText(
+        text_mask,
+        "{:.2f} cm".format(text),
+        point,
+        0,
+        text_scale,
+        (255, 255, 255),
+        text_thickness,
+    )
     if angle > 0:
         angle = -angle + 90
     elif angle < 0:
@@ -200,7 +230,15 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
     return result
 
 
-def draw_real_sizes(img, rect, width_text, height_text, lbl_size_scale=2, lbl_color=(0, 0, 255), lbl_thickness=8):
+def draw_real_sizes(
+    img,
+    rect,
+    width_text,
+    height_text,
+    lbl_size_scale=2,
+    lbl_color=(0, 0, 255),
+    lbl_thickness=8,
+):
     """
     Draws real sizes of rotated rectangle into the image.
     Parameters
@@ -231,31 +269,26 @@ def draw_real_sizes(img, rect, width_text, height_text, lbl_size_scale=2, lbl_co
     pt_label_first = (int(mid_pt_width[0] - 10), int(mid_pt_width[1] - 10))
     pt_label_second = (int(mid_pt_height[0] + 10), int(mid_pt_height[1]))
 
-    result = draw_rotated_text(img, width_text, pt_label_first, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
-    result = draw_rotated_text(result, height_text, pt_label_second, rect[2], lbl_size_scale, lbl_color, lbl_thickness)
+    result = draw_rotated_text(
+        img,
+        width_text,
+        pt_label_first,
+        rect[2],
+        lbl_size_scale,
+        lbl_color,
+        lbl_thickness,
+    )
+    result = draw_rotated_text(
+        result,
+        height_text,
+        pt_label_second,
+        rect[2],
+        lbl_size_scale,
+        lbl_color,
+        lbl_thickness,
+    )
     return result
 
-
-def color_picker(img):
-    img = img.copy()
-    window_name = "color picker"
-    colors = []
-    def on_mouse_click(event, x, y, _, img):
-        if event == cv2.EVENT_LBUTTONUP:
-            colors.append(img[y,x].tolist())
-            cv2.putText(img, f"Point {len(colors)}: {colors[-1]}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
-            print(f"Point {len(colors)}: {colors[-1]}")
-
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
-    cv2.setMouseCallback(window_name, on_mouse_click, img)
-
-    while True:
-        cv2.imshow(window_name, img)
-        k = cv2.waitKey(0)
-        if k == ord('q') or k == ord('Q') or k == 27:
-            break
-
-    cv2.destroyAllWindows()
 
 def draw_lines(img, lines):
     """
@@ -266,12 +299,52 @@ def draw_lines(img, lines):
         Input image.
     lines : ndarray
         array of lines - output of cv2.HoughLines.
-        -------
-    Output image."""
+    Returns
+    -------
+    Output image.
+    """
     img_lines = to_3_channels(img)
 
     for line in lines:
-        l = line[0]
-        cv.line(img_lines, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 2, cv.LINE_AA)
+        line = line[0]
+        cv2.line(
+            img_lines,
+            (line[0], line[1]),
+            (line[2], line[3]),
+            (0, 0, 255),
+            2,
+            cv2.LINE_AA,
+        )
 
     return img_lines
+
+
+def color_picker(img):
+    img = img.copy()
+    window_name = "color picker"
+    colors = []
+
+    def on_mouse_click(event, x, y, _, img):
+        if event == cv2.EVENT_LBUTTONUP:
+            colors.append(img[y, x].tolist())
+            cv2.putText(
+                img,
+                f"Point {len(colors)}: {colors[-1]}",
+                (10, 50),
+                cv2.FONT_HERSHEY_PLAIN,
+                2,
+                (0, 0, 0),
+                2,
+            )
+            print(f"Point {len(colors)}: {colors[-1]}")
+
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
+    cv2.setMouseCallback(window_name, on_mouse_click, img)
+
+    while True:
+        cv2.imshow(window_name, img)
+        k = cv2.waitKey(0)
+        if k == ord("q") or k == ord("Q") or k == 27:
+            break
+
+    cv2.destroyAllWindows()
