@@ -1,12 +1,11 @@
-import PIL
+import cv2
 from pytesseract import pytesseract
 
 from improutils import negative
 
 
-def ocr(img_bin, config='', lang=None):
-    """
-    Detects text in the file.
+def ocr(img_bin, config="", lang=None):
+    """Detect text in the image.
 
     Parameters
     ----------
@@ -22,10 +21,14 @@ def ocr(img_bin, config='', lang=None):
         Selected language must be installed using `sudo apt-get install tesseract-ocr-langcode`
         where `langcode` is the language code. English is installed by default.
         Defaults to None.
+
     Returns
     -------
     The recognized text in the image.
+
     """
     # Tesseract works with black objects on white background.
+    if len(img_bin.shape) == 3:
+        img_bin = cv2.cvtColor(img_bin, cv2.COLOR_BGR2GRAY)
     img_bin = negative(img_bin)
-    return pytesseract.image_to_string(PIL.Image.fromarray(img_bin), config=config, lang=lang)
+    return pytesseract.image_to_string(img_bin, config=config, lang=lang)
