@@ -6,18 +6,28 @@ from .coordconversion import convert_pt_to_homogenous
 
 
 def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
-    """
-    Calculates alfa metric factor using multiple reference measurements via minimization ||As|| = 0. This is done by SVD.
-        In depth overview can be found in https://www.robots.ox.ac.uk/~vgg/publications/1999/Criminisi99b/criminisi99b.pdf - PDF page 104.
+    """Calculate the alpha metric factor using multiple reference measurements.
 
-    :param ref_measurements: list
-        Each measurement is in (t_ref, b_ref, height) format. ``Image coordinates are in inhomogeneous format.
-    :param vanish_line: ndarray
-        Homogenous coordinates of vanishing line.
-    :param vert_vanish_point: ndarray
-        Homogenous coordinates of vanishing point in reference direction.
-    :return: float
-        Scalar value of alfa metric factor calculated by SVD.
+    The factor is estimated by minimizing ‖As‖ = 0 using singular value decomposition (SVD).
+    An in-depth overview can be found in:
+    https://www.robots.ox.ac.uk/~vgg/publications/1999/Criminisi99b/criminisi99b.pdf
+    (PDF page 104).
+
+    Parameters
+    ----------
+    ref_measurements : list of tuple
+        Each measurement is a tuple in the form ``(t_ref, b_ref, height)``.
+        Image coordinates are in inhomogeneous format.
+    vanish_line : ndarray
+        Homogeneous coordinates of the vanishing line.
+    vert_vanish_point : ndarray
+        Homogeneous coordinates of the vanishing point in the reference direction.
+
+    Returns
+    -------
+    float
+        Scalar value of the alpha metric factor calculated by SVD.
+
     """
     matrix_A = np.empty((len(ref_measurements), 2), dtype="float64")
 
@@ -37,12 +47,29 @@ def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
 
 
 class HeightEstimator:
-    """
-    Allows to estimate real world object height based on two points (top and bottom) measured
-    on image plane.
-    """
+
+    """Estimate real world object height based on two points (top and bottom) measured on image plane."""
 
     def __init__(self, ref_measurements, vl, vz):
+        """Initialize a HeightEstimator instance.
+
+        This constructor computes the alpha metric factor from a set of reference
+        measurements and stores the vanishing line and vertical vanishing point
+        used for height estimation.
+
+        Parameters
+        ----------
+        ref_measurements : list of tuple
+            Reference measurements used to calculate the alpha metric factor.
+            Each measurement should be a tuple of the form ``(t_ref, b_ref, height)``
+            with image coordinates in inhomogeneous format.
+        vl : ndarray
+            Homogeneous coordinates of the vanishing line.
+        vz : ndarray
+            Homogeneous coordinates of the vanishing point in the reference
+            (vertical) direction.
+
+        """
         self._vanish_line = vl
         self._vert_vanish_point = vz
         self._alfa_metric_factor = _calc_alfa_metric_factor(
@@ -50,16 +77,23 @@ class HeightEstimator:
         )
 
     def calc_height(self, top_point, bottom_point):
-        """
-        Calculates real world height based on top_point and bottom_point measured
-        on image plane.
+        """Calculate real-world height from image-plane measurements.
 
-        :param top_point: ndarray
-            Top point in reference direction of the object in inhomogeneous format.
-        :param bottom_point: ndarray
+        Given the top and bottom points of an object in the image plane, this function
+        estimates the real-world height of the object.
+
+        Parameters
+        ----------
+        top_point : ndarray
+            Top point of the object in the reference direction, in inhomogeneous format.
+        bottom_point : ndarray
             Ground plane point of the object in inhomogeneous format.
-        :return: float
-            Scalar value representing real world height.
+
+        Returns
+        -------
+        float
+            Real-world height of the object.
+
         """
         top_point = convert_pt_to_homogenous(top_point)
         bottom_point = convert_pt_to_homogenous(bottom_point)
@@ -106,6 +140,7 @@ def _compute_edgelets(image, sigma=3):
         Direction of the edge (tangent) at each of the edgelet.
     strengths: ndarray of shape (n_edgelets,)
         Length of the line segments detected for the edgelet.
+
     """
     gray_img = color.rgb2gray(image)
     edges = feature.canny(gray_img, sigma)
@@ -145,6 +180,7 @@ def _edgelet_lines(edgelets):
     -------
     lines: ndarray of shape (n_edgelets, 3)
         Lines at each of edgelet locations in homogenous system.
+
     """
     locations, directions, _ = edgelets
     normals = np.zeros_like(directions)
@@ -218,6 +254,7 @@ def _ransac_vanishing_point(edgelets, num_ransac_iter=2000, threshold_inlier=5):
     Chaudhury, Krishnendu, Stephen DiVerdi, and Sergey Ioffe.
     "Auto-rectification of user photos." 2014 IEEE International Conference on
     Image Processing (ICIP). IEEE, 2014.
+
     """
     locations, directions, strengths = edgelets
     lines = _edgelet_lines(edgelets)
@@ -266,13 +303,14 @@ def _reestimate_model(model, edgelets, threshold_reestimate=5):
     edgelets: tuple of ndarrays
         (locations, directions, strengths) as computed by `compute_edgelets`.
         All edgelets from which inliers will be computed.
-    threshold_inlier: float
+    threshold_reestimate: float
         threshold to be used for finding inlier edgelets.
 
     Returns
     -------
     restimated_model: ndarry of shape (3,)
         Reestimated model for vanishing point in homogenous coordinates.
+
     """
     locations, directions, strengths = edgelets
 
@@ -306,6 +344,7 @@ def _remove_inliers(model, edgelets, threshold_inlier=10):
     -------
     edgelets_new: tuple of ndarrays
         All Edgelets except those which are inliers to model.
+
     """
     inliers = _compute_votes(edgelets, model, 10) > 0
     locations, directions, strengths = edgelets
@@ -340,10 +379,12 @@ def _compute_homography_and_warp(image, vp1, vp2, clip=True, clip_factor=3):
     clip_factor: float, optional
         Proportion of image in multiples of image size to be retained if gone
         out of bounds after homography.
+
     Returns
     -------
     warped_img: ndarray
         Image warped using homography as described above.
+
     """
     # Find Projective Transform
     vanishing_line = np.cross(vp1, vp2)
@@ -430,7 +471,7 @@ def _compute_homography_and_warp(image, vp1, vp2, clip=True, clip_factor=3):
 
 
 def _vis_edgelets(image, edgelets, show=True):
-    """Helper function to visualize edgelets."""
+    """Visualize edgelets."""
     plt.figure(figsize=(10, 10))
     plt.imshow(image)
     locations, directions, strengths = edgelets
@@ -451,7 +492,7 @@ def _vis_edgelets(image, edgelets, show=True):
 
 
 def _vis_model(image, model, show=True):
-    """Helper function to visualize computed model."""
+    """Visualize computed model."""
     edgelets = _compute_edgelets(image)
     locations, directions, strengths = edgelets
     inliers = _compute_votes(edgelets, model, 10) > 0
@@ -483,10 +524,12 @@ def compute_vanishing_points(image, clip_factor=6, reestimate=False):
     reestimate: bool
         If ransac results are to be reestimated using least squares with
         inlers. Turn this off if getting bad results.
+
     Returns
     -------
     warped_img: ndarray
         Rectified image.
+
     """
     #     if type(image) is not np.ndarray:
     #         image = io.imread(image)
