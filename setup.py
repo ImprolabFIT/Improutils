@@ -1,13 +1,14 @@
+import os
+
 import setuptools
-import os        
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 __version__ = "1.2.0"
 
-if os.environ.get('TARGET_ENV'):
-    __version__ = __version__ + ".dev" + os.environ['CI_JOB_ID']
+if os.environ.get("TARGET_ENV"):
+    __version__ = __version__ + ".dev" + os.environ["CI_JOB_ID"]
 
 setuptools.setup(
     name="improutils",
@@ -38,7 +39,8 @@ setuptools.setup(
         "qreader==3.12",
         "sphinx",
         "sphinx_rtd_theme",
-        "PrettyTable"
-      ],
-    python_requires='>=3.8',
+        "PrettyTable",
+        "ipywidgets",
+    ],
+    python_requires=">=3.8",
 )
