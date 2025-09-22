@@ -14,8 +14,8 @@ from improutils.segmentation import to_3_channels
 def plot_images(
     *imgs, titles=[], channels="bgr", normalize=False, ticks_off=True, title_size=32
 ):
-    """
-    Plots multiple images in one figure.
+    """Plot multiple images in one figure.
+
     Parameters
     ----------
     *imgs : list
@@ -30,9 +30,11 @@ def plot_images(
         If True, axis decorations will be hidden.
     title_size : int
         Size of the title.
+
     Returns
     -------
     None
+
     """
     assert channels.lower() in ["bgr", "rgb", "mono"], (
         "Possible values for channels are: bgr, rgb or mono!"
@@ -83,27 +85,30 @@ def plot_images(
 
 
 def show_images(*imgs, scale=1, window_name="Image preview"):
-    """
-    This function is deprecated. Use plot_images instead.
+    """Display multiple images in separate resizable windows.
 
-    Opens multiple image previews depending on the length of the input \*imgs list.
-    The preview is terminated by pressing the 'q' key.
+    Each image in the input list is shown in its own window. The user can
+    click on the images to print the (x, y) coordinates of mouse clicks.
+    The preview is terminated by pressing the 'q', 'Q', or 'Esc' key.
 
     Parameters
     ----------
-    \*imgs : list
-        Multiple input images which have to be shown.
-    scale : double
-        Scale of shown image window.
-    window_name : Optional[string]
-        An optional window name.
+    *imgs : ndarray
+        One or more images to display. Each image can be grayscale or color (BGR).
+    scale : float, optional
+        Scaling factor for the displayed image windows. Default is 1.
+    window_name : str, optional
+        Base name for the displayed windows. Default is "Image preview".
+
     Returns
     -------
     None
 
-    See known bug for Mac users
-    ---------------------------
+    Notes
+    -----
+    Known bug for Mac users: see
     https://gitlab.fit.cvut.cz/bi-svz/bi-svz/issues/13
+
     """
 
     def print_xy(event, x, y, flags, param):
@@ -131,17 +136,19 @@ def show_images(*imgs, scale=1, window_name="Image preview"):
 
 
 def show_camera_window(*imgs, scale=1):
-    """
-    Opens input images in separate windows.
+    """Open input images in separate windows.
+
     Parameters
     ----------
     *imgs : list
         Arbitrary number of images to be shown.
     scale : double
         Scale of shown image window.
+
     Returns
     -------
     None
+
     """
 
     def print_xy(event, x, y, flags, param):
@@ -161,21 +168,24 @@ def show_camera_window(*imgs, scale=1):
 
 
 def draw_rotated_rect(img, cnt):
-    """
-    Draws rotated rectangle with minimum area into the image, around the contour.
+    """Draw rotated rectangle with minimum area into the image, around the contour.
+
     Input image is not modified.
+
     Parameters
     ----------
     img : ndarray
         Input image.
     cnt : ndarray
         Contour around which the rectangle will be drawn
+
     Returns
     -------
     res : ndarray
         Image with drawn rectangle on it.
     rect : ndarray
         rectangle from cv2.minAreaRect
+
     """
     res = img.copy()
     rect = cv2.minAreaRect(cnt)
@@ -186,8 +196,8 @@ def draw_rotated_rect(img, cnt):
 
 
 def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thickness):
-    """
-    Draws rotated text into the image.
+    """Draw rotated text into the image.
+
     Parameters
     ----------
     img : ndarray
@@ -204,11 +214,12 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
         Color of text.
     text_thickness : int
         Thickness of text.
+
     Returns
     -------
     Output image.
-    """
 
+    """
     img_filled = np.full(img.shape, text_color, dtype=np.uint8)
     # create rotated text mask
     text_mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
@@ -239,8 +250,8 @@ def draw_real_sizes(
     lbl_color=(0, 0, 255),
     lbl_thickness=8,
 ):
-    """
-    Draws real sizes of rotated rectangle into the image.
+    """Draw real sizes of rotated rectangle into the image.
+
     Parameters
     ----------
     img : ndarray
@@ -257,9 +268,11 @@ def draw_real_sizes(
         Color of text.
     lbl_thickness : int
         Thickness of text.
+
     Returns
     -------
     Output image.
+
     """
     tl, tr, br, bl = order_points(cv2.boxPoints(rect))
     mid_pt_width = midpoint(tl, tr)
@@ -291,17 +304,19 @@ def draw_real_sizes(
 
 
 def draw_lines(img, lines):
-    """
-    Helper function for drawing lines coming from  HoughLines procedure into image
+    """Draw lines coming from  HoughLines procedure into image.
+
     Parameters
     ----------
     img : ndarray
         Input image.
     lines : ndarray
         array of lines - output of cv2.HoughLines.
+
     Returns
     -------
     Output image.
+
     """
     img_lines = to_3_channels(img)
 
@@ -320,6 +335,26 @@ def draw_lines(img, lines):
 
 
 def color_picker(img):
+    """Interactive tool to pick colors from an image.
+
+    Displays the input image in a window and allows the user to click
+    on points to sample their colors. Each selected color is printed
+    in the console and annotated on the image. Press 'q', 'Q', or
+    'Esc' to exit.
+
+    Parameters
+    ----------
+    img : ndarray
+        Input image in which colors will be sampled. Can be grayscale
+        or color (BGR) image.
+
+    Returns
+    -------
+    None
+        This function does not return a value. Selected colors are printed
+        to the console and annotated on the displayed image.
+
+    """
     img = img.copy()
     window_name = "color picker"
     colors = []
