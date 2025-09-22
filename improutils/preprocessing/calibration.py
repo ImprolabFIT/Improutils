@@ -28,8 +28,7 @@ def camera_calibration(
     np.ndarray,
     Dict[str, np.ndarray],
 ]:
-    """
-    Calibrates camera from images with chessboard pattern, using OpenCV's cv2.calibrateCameraExtended function.
+    """Calibrate camera from images with chessboard pattern, using OpenCV's cv2.calibrateCameraExtended function.
 
     Parameters
     ----------
@@ -55,8 +54,8 @@ def camera_calibration(
         If no calibration images were found or could not be read from the provided path.
     ValueError
         If no chessboard patterns were detected in the images.
-    """
 
+    """
     print(f"Processing images from {calib_path} with possible extensions {extensions}")
 
     def correct_extension(path, extensions):
@@ -164,8 +163,8 @@ def calibration_stats(
     view_names: List[str] | None = None,
     pixel_size: Union[float, Tuple[float, float]] | None = None,
 ) -> None:
-    """
-    Prints calibration statistics.
+    """Print calibration statistics.
+
     RMS re-projection error, estimated intrinsics and distortion parameters, with standard deviations,
     focal length in millimeters, and per-view reprojection errors.
 
@@ -185,6 +184,7 @@ def calibration_stats(
         Image names for which the chessboard was detected. Defaults to None.
     pixel_size : Union[float, Tuple[float, float]], optional
         Size of physical pixels of a camera in micrometers (e.g., 4.8, 5.86, or [5.86, 4.8] for non-square pixels). Defaults to None.
+
     """
     # opencv always returns atleast 4 distortion coefficients
     params_amount = 4 + dist_coeffs.shape[1]
@@ -291,25 +291,24 @@ def calibration_stats(
 
 
 def correct_frame(frame, camera_matrix, dist_coeffs):
-    """
-    Returns an undistorted frame.
-    """
+    """Return an undistorted frame."""
     return cv2.undistort(frame, camera_matrix, dist_coeffs)
 
 
 def load_camera_calib(input_file):
-    """
-    Loads camera calibration from specified input file.
+    """Load camera calibration from specified input file.
 
     Parameters
     ----------
     input_file : string
         Input file with calibration data in YAML format.
+
     Returns
     -------
     tuple(ndarray, ndarray)
         Returns a tuple where first element is camera matrix array and second element is dist coefficients array.
         These arrays might be empty if the file isn't found or in correct format.
+
     """
     try:
         with open(input_file, "r") as stream:
@@ -321,16 +320,25 @@ def load_camera_calib(input_file):
 
 
 def save_camera_calib(output_file, camera_matrix, dist_coefs):
-    """
-    Saves camera calibration to specified output file.
+    """Save camera calibration data to a YAML file.
+
+    This function stores the camera matrix and distortion coefficients in
+    the specified output file. If the parent directory does not exist, it
+    is created automatically.
 
     Parameters
     ----------
-    output_file : string
-        Output file used for storing calibration data in YAML format. Parent directory is created if needed.
+    output_file : str
+        Path to the output YAML file where calibration data will be saved.
+    camera_matrix : ndarray
+        Camera intrinsic matrix.
+    dist_coefs : ndarray
+        Distortion coefficients of the camera.
+
     Returns
     -------
     None
+
     """
     data = {IDX_CAM_MATRIX: camera_matrix, IDX_DIST_COEFFS: dist_coefs}
     output_dir = os.path.dirname(output_file)
