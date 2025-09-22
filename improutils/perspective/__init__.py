@@ -1,5 +1,5 @@
 # coordinate conversion functions
-from .coordconversion import (
+from .coord_conversion import (
     convert_pt_from_homogenous,
     convert_pt_to_homogenous,
     convert_pts_from_homogenous,
@@ -7,7 +7,7 @@ from .coordconversion import (
 )
 
 # height estimation functions and classes
-from .heightestimator import (
+from .height_estimator import (
     HeightEstimator,
     compute_vanishing_points,
 )

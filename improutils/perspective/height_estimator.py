@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skimage import color, feature, transform
 
-from .coordconversion import convert_pt_to_homogenous
+from .coord_conversion import convert_pt_to_homogenous
 
 
 def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
@@ -47,7 +47,6 @@ def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
 
 
 class HeightEstimator:
-
     """Estimate real world object height based on two points (top and bottom) measured on image plane."""
 
     def __init__(self, ref_measurements, vl, vz):
