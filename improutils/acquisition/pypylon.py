@@ -2,16 +2,17 @@ from pypylon import pylon
 
 
 def connect_camera(serial_number):
-    """
-    Connects the camera specified with its serial number
+    """Connect the camera specified with its serial number.
 
     Parameters
     ----------
     serial_number : string
         The camera's serial number.
+
     Returns
     -------
     camera : object
+
     """
     info = None
     for i in pylon.TlFactory.GetInstance().EnumerateDevices():
@@ -19,7 +20,7 @@ def connect_camera(serial_number):
             info = i
             break
     else:
-        print('Camera with {} serial number not found'.format(serial_number))
+        print("Camera with {} serial number not found".format(serial_number))
 
     # VERY IMPORTANT STEP! To use Basler PyPylon OpenCV viewer you have to call .Open() method on you camera
     if info is not None:
