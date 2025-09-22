@@ -7,7 +7,7 @@ Submodules
 improutils.perspective.coordconversion module
 ---------------------------------------------
 
-.. automodule:: improutils.perspective.coordconversion
+.. automodule:: improutils.perspective.coord_conversion
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ improutils.perspective.coordconversion module
 improutils.perspective.heightestimator module
 ---------------------------------------------
 
-.. automodule:: improutils.perspective.heightestimator
+.. automodule:: improutils.perspective.height_estimator
    :members:
    :undoc-members:
    :show-inheritance:
