@@ -103,26 +103,7 @@ def fill_holes(img_bin, close=False, size=5):
     return res
 
 
-def get_center(contour):
-    """
-    Gets the center of a contour in pixels in tuple format.
-
-    Parameters
-    ----------
-    contour : ndarray
-        input contour.
-    Returns
-    -------
-    A tuple with x and y coordinates of the contour's center.
-    """
-    M = cv2.moments(contour)
-    cX = int(M["m10"] / M["m00"])
-    cY = int(M["m01"] / M["m00"])
-
-    return cX, cY
-
-
-def find_holes(img_bin, min_area=0, max_area=1000000, fill=True):
+def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
     """
     Finds inner contours of holes in binary image and filters them using their area. Then it draws binary image from filtered contours. It counts contours as well.
 
@@ -168,3 +149,22 @@ def find_holes(img_bin, min_area=0, max_area=1000000, fill=True):
         thickness=thick,
     )
     return contours_drawn, len(contours), contours
+
+
+def get_center(contour):
+    """
+    Gets the center of a contour in pixels in tuple format.
+
+    Parameters
+    ----------
+    contour : ndarray
+        input contour.
+    Returns
+    -------
+    A tuple with x and y coordinates of the contour's center.
+    """
+    M = cv2.moments(contour)
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
+
+    return cX, cY
