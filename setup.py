@@ -41,6 +41,7 @@ setuptools.setup(
         "sphinx_rtd_theme",
         "PrettyTable",
         "ipywidgets",
+        "scikit-image",
     ],
     python_requires=">=3.8",
 )
