@@ -141,7 +141,7 @@ def calibration_stats(reprojection_error:float,
     print(f"\nEstimated intrinsics parameters")
     intrinsics_table = PrettyTable()
     intrinsics_table.add_column("Parameter", parameters[:4])
-    intrinsics_table.add_column("Estimated Value ± Std Deviation", [f"{val:.5f}± {std:.5f}" for val,std in zip([camera_matrix[0, 0], camera_matrix[1, 1], camera_matrix[0, 2], camera_matrix[1, 2]],std_deviations_intrinsics[:4,0])])
+    intrinsics_table.add_column("Estimated Value ± Std Deviation", [f"{val:.5f} ± {std:.5f}" for val,std in zip([camera_matrix[0, 0], camera_matrix[1, 1], camera_matrix[0, 2], camera_matrix[1, 2]],std_deviations_intrinsics[:4,0])])
     intrinsics_table.add_column("Unit", units[:4])
     print(intrinsics_table)
    
