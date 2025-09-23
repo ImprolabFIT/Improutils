@@ -141,6 +141,7 @@ def camera_calibration(
         distCoeffs=None,
         flags=cv2_flags,
         criteria=criteria,
+        chessboard_images
     )
     # calib values is a tuple of:
     # reprojection_error
@@ -151,7 +152,10 @@ def camera_calibration(
     # std_deviations_intrinsics
     # std_deviations_extrinsics
     # per_view_errors
-    return calib_values  # type:ignore
+    
+    reprojection_error, camera_matrix, dist_coeffs, rvecs, tvecs, std_deviations_intrinsics, std_deviations_extrinsics, per_view_errors = calib_values
+    return reprojection_error, camera_matrix, dist_coeffs, rvecs, tvecs, std_deviations_intrinsics, std_deviations_extrinsics, per_view_errors, chessboard_images
+    # return calib_values  # type:ignore
 
 
 def calibration_stats(
