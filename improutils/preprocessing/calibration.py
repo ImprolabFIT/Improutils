@@ -141,7 +141,6 @@ def camera_calibration(
         distCoeffs=None,
         flags=cv2_flags,
         criteria=criteria,
-        chessboard_images
     )
     # calib values is a tuple of:
     # reprojection_error
