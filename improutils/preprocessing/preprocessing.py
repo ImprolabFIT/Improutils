@@ -243,7 +243,7 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
         Input image to be warped.
     size : tuple of int, optional
         Size of the destination image as (height, width). Default is None,
-        which keeps the original image size.
+        which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
     full_radius : bool, optional
         If True, the warp uses the full radius of the image (diagonal from
         center to corner). If False, only the vertical radius is used.
