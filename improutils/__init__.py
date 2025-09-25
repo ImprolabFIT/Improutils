@@ -1,8 +1,219 @@
-from .other import *
-from .acquisition import *
-from .filtration import *
-from .preprocessing import *
-from .recognition import *
-from .segmentation import *
-from .visualisation import *
+# image acquisition functions
+from .acquisition import (
+    VIEWER_CONFIG_MONO_LINE,
+    VIEWER_CONFIG_MONO_MATRIX,
+    VIEWER_CONFIG_MONO_MATRIX_PERICENTRIC,
+    VIEWER_CONFIG_RGB_MATRIX,
+    connect_camera,
+    copy_to,
+    load_image,
+    reindex_image_files,
+    save_image,
+)
 
+# image filtration functions
+from .filtration import (
+    apply_fft,
+    create_filter_mask,
+    filter_mag_spec,
+    filtration_box,
+    filtration_gauss,
+    filtration_median,
+    inverse_fft,
+)
+from .other import (
+    artificial_circle_image,
+    create_file_path,
+    create_slider,
+    midpoint,
+    multicolor_segmentation,
+    order_points,
+    pcd_to_depth,
+    plot_distortion,
+)
+
+# perspective and geometry functions
+from .perspective import (
+    HeightEstimator,
+    compute_vanishing_points,
+    convert_pt_from_homogenous,
+    convert_pt_to_homogenous,
+    convert_pts_from_homogenous,
+    convert_pts_to_homogenous,
+)
+
+# image preprocessing functions
+from .preprocessing import (
+    black_hat,
+    calibration_stats,
+    camera_calibration,
+    close,
+    contour_to_image,
+    correct_frame,
+    crop,
+    crop_by_bounding_rect,
+    crop_contour,
+    dilate,
+    erode,
+    fill_holes,
+    find_contours,
+    find_holes,
+    get_center,
+    load_camera_calib,
+    morphological_gradient,
+    negative,
+    normalize,
+    normalize2BGR_image,
+    open,
+    polar_warp,
+    resize,
+    rotate,
+    save_camera_calib,
+    to_gray,
+    to_hsv,
+    to_rgb,
+    top_hat,
+    warp_to_cartesian,
+    warp_to_polar,
+)
+
+# pattern recognition functions
+from .recognition import (
+    ShapeDescriptors,
+    aspect_ratio,
+    compactness,
+    convexity,
+    extent,
+    form_factor,
+    ocr,
+    qr_decode,
+    qr_detect,
+    qr_detect_and_decode,
+    qr_init_reader,
+    roundness,
+    solidity,
+)
+
+# image segmentation functions
+from .segmentation import (
+    apply_mask,
+    segmentation_adaptive_threshold,
+    segmentation_auto_threshold,
+    segmentation_one_threshold,
+    segmentation_two_thresholds,
+    to_3_channels,
+    to_angle,
+    to_intensity,
+)
+
+# image visualization functions
+from .visualisation import (
+    color_picker,
+    draw_lines,
+    draw_real_sizes,
+    draw_text,
+    plot_images,
+    show_camera_window,
+    show_images,
+)
+
+# define public API - all functions available at package level
+__all__ = [
+    # utility functions
+    "midpoint",
+    "artificial_circle_image",
+    "order_points",
+    "pcd_to_depth",
+    "create_file_path",
+    "create_slider",
+    "multicolor_segmentation",
+    "plot_distortion",
+    # image acquisition
+    "load_image",
+    "save_image",
+    "copy_to",
+    "reindex_image_files",
+    "connect_camera",
+    "VIEWER_CONFIG_RGB_MATRIX",
+    "VIEWER_CONFIG_MONO_MATRIX",
+    "VIEWER_CONFIG_MONO_LINE",
+    "VIEWER_CONFIG_MONO_MATRIX_PERICENTRIC",
+    # image filtration
+    "apply_fft",
+    "create_filter_mask",
+    "filter_mag_spec",
+    "filtration_box",
+    "filtration_gauss",
+    "filtration_median",
+    "inverse_fft",
+    # image preprocessing
+    "camera_calibration",
+    "calibration_stats",
+    "correct_frame",
+    "load_camera_calib",
+    "save_camera_calib",
+    "contour_to_image",
+    "find_contours",
+    "fill_holes",
+    "get_center",
+    "find_holes",
+    "erode",
+    "dilate",
+    "open",
+    "close",
+    "morphological_gradient",
+    "top_hat",
+    "black_hat",
+    "to_gray",
+    "to_hsv",
+    "to_rgb",
+    "negative",
+    "normalize",
+    "normalize2BGR_image",
+    "crop",
+    "crop_by_bounding_rect",
+    "crop_contour",
+    "resize",
+    "rotate",
+    "polar_warp",
+    "warp_to_polar",
+    "warp_to_cartesian",
+    # pattern recognition
+    "ShapeDescriptors",
+    "form_factor",
+    "roundness",
+    "aspect_ratio",
+    "convexity",
+    "solidity",
+    "compactness",
+    "extent",
+    "ocr",
+    "qr_init_reader",
+    "qr_detect_and_decode",
+    "qr_decode",
+    "qr_detect",
+    # image segmentation
+    "apply_mask",
+    "to_intensity",
+    "to_angle",
+    "to_3_channels",
+    "segmentation_one_threshold",
+    "segmentation_auto_threshold",
+    "segmentation_two_thresholds",
+    "segmentation_adaptive_threshold",
+    # image visualization
+    "color_picker",
+    "draw_lines",
+    "draw_real_sizes",
+    "draw_text",
+    "plot_images",
+    "show_camera_window",
+    "show_images",
+    # perspective and geometry
+    "convert_pt_to_homogenous",
+    "convert_pt_from_homogenous",
+    "convert_pts_to_homogenous",
+    "convert_pts_from_homogenous",
+    "HeightEstimator",
+    "compute_vanishing_points",
+]
