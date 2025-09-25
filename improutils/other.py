@@ -66,14 +66,14 @@ def order_points(pts):
     """
     if not isinstance(pts, np.ndarray):
         raise ValueError(
-            "Ivalid input point format. Numpy ndarray expected. Got {}".format(
+            "Invalid input point format. Numpy ndarray expected. Got {}".format(
                 type(pts)
             )
         )
 
     if len(pts) < 4:
         raise ValueError(
-            "Ivalid amount of input points. Got {} elements".format(len(pts))
+            "Invalid amount of input points. Got {} elements".format(len(pts))
         )
 
     xSorted = pts[np.argsort(pts[:, 0]), :]

@@ -1,3 +1,4 @@
+import copy
 import math
 
 import cv2
@@ -7,7 +8,6 @@ from matplotlib.colors import NoNorm, Normalize
 
 from improutils.acquisition import copy_to
 from improutils.other import midpoint, order_points
-from improutils.preprocessing import rotate
 from improutils.segmentation import to_3_channels
 
 
@@ -195,7 +195,7 @@ def draw_rotated_rect(img, cnt):
     return res, rect
 
 
-def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thickness):
+def draw_text(img, text, point, text_scale, text_color, text_thickness):
     """Draw rotated text into the image.
 
     Parameters
@@ -206,8 +206,6 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
         Text to be drawn.
     point : tuple
         Point where text is drawn.
-    angle : double
-        Angle of rotation.
     text_scale : double
         Scale of text.
     text_color : tuple
@@ -220,25 +218,18 @@ def draw_rotated_text(img, text, point, angle, text_scale, text_color, text_thic
     Output image.
 
     """
-    img_filled = np.full(img.shape, text_color, dtype=np.uint8)
+    img_text = copy.deepcopy(img)
     # create rotated text mask
-    text_mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
     cv2.putText(
-        text_mask,
+        img_text,
         "{:.2f} cm".format(text),
         point,
         0,
         text_scale,
-        (255, 255, 255),
+        text_color,
         text_thickness,
     )
-    if angle > 0:
-        angle = -angle + 90
-    elif angle < 0:
-        angle = angle + 90
-    text_mask = rotate(text_mask, -angle, point)
-    result = copy_to(img_filled, img.copy(), text_mask)
-    return result
+    return img_text
 
 
 def draw_real_sizes(
@@ -275,27 +266,25 @@ def draw_real_sizes(
 
     """
     tl, tr, br, bl = order_points(cv2.boxPoints(rect))
-    mid_pt_width = midpoint(tl, tr)
-    mid_pt_height = midpoint(tr, br)
+    mid_pt_height = midpoint(tl, bl)
+    mid_pt_width = midpoint(bl, br)
 
     # bottom-left points where labels are drawn
     pt_label_first = (int(mid_pt_width[0] - 10), int(mid_pt_width[1] - 10))
     pt_label_second = (int(mid_pt_height[0] + 10), int(mid_pt_height[1]))
 
-    result = draw_rotated_text(
+    result = draw_text(
         img,
         width_text,
         pt_label_first,
-        rect[2],
         lbl_size_scale,
         lbl_color,
         lbl_thickness,
     )
-    result = draw_rotated_text(
+    result = draw_text(
         result,
         height_text,
         pt_label_second,
-        rect[2],
         lbl_size_scale,
         lbl_color,
         lbl_thickness,
