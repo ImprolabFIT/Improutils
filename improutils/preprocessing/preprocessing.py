@@ -283,8 +283,8 @@ def warp_to_polar(img, size=None, full_radius=True):
     img : ndarray
         Input image to be warped.
     size : tuple of int, optional
-        Size of the output image as (height, width). Default is None,
-        which preserves the original image size.
+        Size of the destination image as (height, width). Default is None,
+        which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
     full_radius : bool, optional
         If True, uses the full image diagonal as the radius for the warp.
         If False, uses only the vertical radius. Default is True.
@@ -309,8 +309,8 @@ def warp_to_cartesian(img, size=None, full_radius=True):
     img : ndarray
         Input image to be warped.
     size : tuple of int, optional
-        Size of the output image as (height, width). Default is None,
-        which preserves the original image size.
+        Size of the destination image as (height, width). Default is None,
+        which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
     full_radius : bool, optional
         If True, uses the full image diagonal as the radius for the warp.
         If False, uses only the vertical radius. Default is True.
