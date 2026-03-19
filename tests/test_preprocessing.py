@@ -109,10 +109,12 @@ class ContoursTestCase(unittest.TestCase):
         img = to_gray(img)
         img_bin = segmentation_two_thresholds(img, 0, 250)
 
-        contour_drawn_f, _, _ = find_contours(img_bin)
+        contour_drawn_f, _, holes = find_contours(img_bin)
         contour_drawn, _, _ = find_contours(img_bin, fill=False)
 
-        img_bin_fill = fill_holes(contour_drawn)
+        # Fill all detected holes by passing all indices
+        all_indices = list(range(len(holes)))
+        img_bin_fill = fill_holes(contour_drawn, holes, all_indices)
 
         self.assertLess(cv2.norm(contour_drawn_f - img_bin_fill), eps)
 

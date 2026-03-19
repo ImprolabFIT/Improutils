@@ -88,30 +88,28 @@ def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True
     return contour_drawn, len(contours), contours
 
 
-def fill_holes(img_bin, close=False, size=5):
-    """Fill the holes in found contours. It could merge the contour using close input with appropriate size.
+def fill_holes(img_bin, holes, indeces):
+    """Fill selected holes in a binary image by drawing filled polygons.
 
     Parameters
     ----------
     img_bin : ndarray
-        Input binary image.
-    close : boolean
-        If it should merge contours with missing points using close operation.
-    size : int
-        Size of the close operation element.
-    fill : bool, optional
-        If True, filled contours are drawn; if False, contours are drawn as outlines. Default is True.
+        Input binary image (used for shape reference).
+    holes : list
+        List of contours/polygons representing the detected holes.
+    indeces : list
+        List of indices specifying which holes from `holes` to fill.
 
     Returns
     -------
-    Output binary image.
+    ndarray
+        Output binary image with the selected holes filled.
 
     """
-    if close:
-        struct = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (size, size))
-        img_bin = cv2.morphologyEx(img_bin, cv2.MORPH_CLOSE, struct)
-    res, _, _ = find_contours(img_bin)
-    return res
+    res = np.zeros(img_bin.shape)
+    for index in indeces:
+        cv2.fillPoly(res, [holes[index]], 255)
+    return res.astype(np.uint8)
 
 
 def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
