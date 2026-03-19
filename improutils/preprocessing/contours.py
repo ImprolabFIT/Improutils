@@ -109,7 +109,7 @@ def fill_holes(img_bin, holes, indeces):
     res = np.zeros(img_bin.shape)
     for index in indeces:
         cv2.fillPoly(res, [holes[index]], 255)
-    return res
+    return res.astype(np.uint8)
 
 
 def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
