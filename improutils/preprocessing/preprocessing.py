@@ -126,8 +126,8 @@ def crop(img, tl_x, tl_y, br_x, br_y):
     return roi
 
 
-def crop_by_bounding_rect(img_bin):
-    """Crop binary image by ONE bounding rectangle corresponding to ALL objects in the binary image.
+def crop_by_bounding_rect(img_bin, contour_index:int = 0):
+    """Crop binary image by ONE bounding rectangle corresponding to the object in the binary image. The object is specified by the contour index in case of more objects.
 
     Parameters
     ----------
@@ -142,7 +142,9 @@ def crop_by_bounding_rect(img_bin):
     assert len(img_bin.shape) == 2, "Input image is NOT binary!"
 
     contours, _ = cv2.findContours(img_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    tl_x, tl_y, w, h = cv2.boundingRect(contours[0])
+    if len(contours) == 0:
+        raise ValueError("Could not crop the object as no contours were found.")
+    tl_x, tl_y, w, h = cv2.boundingRect(contours[contour_index])
     return crop(img_bin, tl_x, tl_y, tl_x + w, tl_y + h)
 
 
