@@ -365,6 +365,6 @@ def plot_distortion(
     _plot_grid(xv_tang, yv_tang, squares, axs[1])
     axs[1].set_title("Tangential distortion grid")
 
-    _plot_grid(xv_radial + xv_tang, yv_radial + yv_tang, squares, axs[2])
+    _plot_grid(xv_radial + xv_tang - xv, yv_radial + yv_tang, squares, axs[2])
     axs[2].set_title("Compounded distortion grid")
     plt.show()
