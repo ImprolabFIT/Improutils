@@ -316,7 +316,7 @@ def load_camera_calib(input_file):
     try:
         with open(input_file, "r") as stream:
             data = yaml.safe_load(stream)
-            return data[IDX_CAM_MATRIX], data[IDX_DIST_COEFFS]
+            return np.array(data[IDX_CAM_MATRIX]), np.array(data[IDX_DIST_COEFFS])
     except (FileNotFoundError, yaml.YAMLError):
         print(f"File {input_file} couldn't be read.")
         return np.array([]), np.array([])
@@ -343,11 +343,11 @@ def save_camera_calib(output_file, camera_matrix, dist_coefs):
     None
 
     """
-    data = {IDX_CAM_MATRIX: camera_matrix, IDX_DIST_COEFFS: dist_coefs}
+    data = {IDX_CAM_MATRIX: camera_matrix.tolist(), IDX_DIST_COEFFS: dist_coefs.tolist()}
     output_dir = os.path.dirname(output_file)
 
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     with open(output_file, "w") as f:
         yaml.dump(data, f)
