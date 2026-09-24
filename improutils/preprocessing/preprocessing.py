@@ -190,7 +190,7 @@ def resize(image, size, method=cv2.INTER_AREA):
 
     """
     assert type(size) is tuple, "Variable size is NOT a tuple!"
-    return cv2.resize(image, size, method)
+    return cv2.resize(image, size, interpolation=method)
 
 
 def rotate(image, angle, image_center=None):
