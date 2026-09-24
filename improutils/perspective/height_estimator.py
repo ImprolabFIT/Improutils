@@ -43,7 +43,7 @@ def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
         # print(alfa_metric_factor)
 
     u, s, vh = np.linalg.svd(matrix_A)
-    return vh[0, -1] / vh[1, -1]
+    return vh[-1, 0] / vh[-1, 1]
 
 
 class HeightEstimator:
