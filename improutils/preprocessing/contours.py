@@ -147,6 +147,8 @@ def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
     )
     # filter out only hole contours (contours that are inside another contour)
     # for more info about hierarchy retrieval modes visit: https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
+    if hierarchy is None:
+        return np.zeros((img_bin.shape), dtype=np.uint8), 0, []
     hole_indices = [i for i in range(len(hierarchy[0])) if hierarchy[0, i, -1] != -1]
     # filter out contours by area
     contours = [
