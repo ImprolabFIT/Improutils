@@ -190,6 +190,7 @@ def calibration_stats(
 
     """
     # opencv always returns atleast 4 distortion coefficients
+    dist_coeffs = np.asarray(dist_coeffs).reshape(1, -1)
     params_amount = 4 + dist_coeffs.shape[1]
 
     parameters = [
@@ -219,7 +220,7 @@ def calibration_stats(
     print("\nEstimated intrinsics parameters")
     if std_deviations_intrinsics is None:
         print("\tNo standard deviations provided!")
-        std_deviations_intrinsics = np.zeros(params_amount)
+        std_deviations_intrinsics = np.full((params_amount, 1), np.nan)
 
     intrinsics_table = PrettyTable()
     intrinsics_table.add_column("Parameter", parameters[:4])
@@ -250,15 +251,15 @@ def calibration_stats(
             f"{val:.5f} ± {std:.5f}"
             for val, std in zip(
                 dist_coeffs[0, : params_amount - 4],
-                std_deviations_intrinsics[4 : params_amount + 4, 0],
+                std_deviations_intrinsics[4:params_amount, 0],
             )
         ],
     )
     distortion_table.add_column("Unit", units[4:params_amount])
     print(distortion_table)
 
-    if pixel_size is not None and std_deviations_intrinsics is not None:
-        if not isinstance(pixel_size, tuple):
+    if pixel_size is not None:
+        if np.isscalar(pixel_size):
             pixel_size = (pixel_size, pixel_size)
         print("\nEstimated Focal length in millimeters")
         focal_length_table = PrettyTable()
