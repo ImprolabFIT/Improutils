@@ -21,7 +21,7 @@ def erode(img, kernel_size=3, iterations=1, kernel=None):
     The eroded image.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.erode(img, kernel=kernel, iterations=iterations)
 
 
@@ -44,7 +44,7 @@ def dilate(img, kernel_size=3, iterations=1, kernel=None):
     The dilated image.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.dilate(img, kernel=kernel, iterations=iterations)
 
 
@@ -67,7 +67,7 @@ def open(img, kernel_size=3, iterations=1, kernel=None):
     The image after applying the morphological opening operation.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=iterations)
 
 
@@ -90,7 +90,7 @@ def close(img, kernel_size=3, iterations=1, kernel=None):
     The image after applying the closing operation.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=iterations)
 
 
@@ -113,7 +113,7 @@ def morphological_gradient(img, kernel_size=3, iterations=1, kernel=None):
     The image after applying the morphological gradient operation.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.morphologyEx(img, cv2.MORPH_GRADIENT, kernel, iterations=iterations)
 
 
@@ -136,7 +136,7 @@ def top_hat(img, kernel_size=3, iterations=1, kernel=None):
     The image after applying the top hat operation.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8) if not kernel else kernel
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.morphologyEx(img, cv2.MORPH_TOPHAT, kernel, iterations=iterations)
 
 
@@ -159,5 +159,5 @@ def black_hat(img, kernel_size=3, iterations=1, kernel=None):
     The image after applying the black hat operation.
 
     """
-    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    kernel = np.ones((kernel_size, kernel_size), np.uint8) if kernel is None else kernel
     return cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, kernel, iterations=iterations)
