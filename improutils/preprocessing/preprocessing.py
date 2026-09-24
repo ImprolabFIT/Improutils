@@ -127,7 +127,8 @@ def crop(img, tl_x, tl_y, br_x, br_y):
 
 
 def crop_by_bounding_rect(img_bin, contour_index:int = 0):
-    """Crop binary image by ONE bounding rectangle corresponding to the object in the binary image. The object is specified by the contour index in case of more objects.
+    """Crop binary image by ONE bounding rectangle corresponding to the object in the binary image.
+    The object is specified by the contour index in case of more objects.
 
     Parameters
     ----------
@@ -242,13 +243,15 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
     Parameters
     ----------
     img : ndarray
-        Input image to be warped.
+        Input image to be warped. For the inverse warp, this is the image in polar coordinates.
     size : tuple of int, optional
-        Size of the destination image as (height, width). Default is None,
+        Size of the destination image as (width, height). Default is None,
         which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
+        For the inverse warp, size is required and must be the size of the original image, because the center and radius are computed from it.
     full_radius : bool, optional
         If True, the warp uses the full radius of the image (diagonal from
         center to corner). If False, only the vertical radius is used.
+        Must be teh same fro the forward and inverse warp.
         Default is True.
     inverse : bool, optional
         If True, applies the inverse warp mapping. Default is False.
@@ -256,15 +259,28 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
     Returns
     -------
     ndarray
-        Warped image in polar coordinates.
-
+        Warped image in polar coordinates, or in Cartesian coordinates if inverse is True.
+    
+    Raises
+    ------
+    ValueError
+        If inverse is True and size is None
+    
     """
-    center = (img.shape[0] / 2.0, img.shape[1] / 2.0)
+
+    if inverse:
+        if size is None:
+            raise ValueError("Inverse warp needs the size of the original image as (width, height).")
+        width, height = size
+    else:
+        height, width = img.shape[:2]
+
+    center = (width / 2.0, height / 2.0)
 
     if full_radius:
-        radius = np.sqrt(((img.shape[0] / 2.0) ** 2.0) + ((img.shape[1] / 2.0) ** 2.0))
+        radius = np.hypot(width / 2.0, height / 2.0)
     else:
-        radius = center[0]
+        radius = height / 2.0
 
     method = cv2.WARP_FILL_OUTLIERS
 
