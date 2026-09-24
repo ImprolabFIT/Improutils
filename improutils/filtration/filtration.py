@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+import numpy.typing as npt
 
 
-def filtration_box(img, filter_size):
+def filtration_box(img: np.ndarray, filter_size: int) -> np.ndarray:
     """Filter image noise using box blur algorithm.
 
     Parameters
@@ -20,7 +21,7 @@ def filtration_box(img, filter_size):
     return cv2.blur(img, (filter_size, filter_size))
 
 
-def filtration_median(img, filter_size):
+def filtration_median(img: np.ndarray, filter_size: int) -> np.ndarray:
     """Filter image noise using median blur algorithm.
 
     Parameters
@@ -38,7 +39,7 @@ def filtration_median(img, filter_size):
     return cv2.medianBlur(img, filter_size)
 
 
-def filtration_gauss(img, filter_size, sigma_x):
+def filtration_gauss(img: np.ndarray, filter_size: int, sigma_x: float) -> np.ndarray:
     """Filter image noise using Gaussian blur algorithm.
 
     Parameters
@@ -58,7 +59,7 @@ def filtration_gauss(img, filter_size, sigma_x):
     return cv2.GaussianBlur(img, (filter_size, filter_size), sigma_x)
 
 
-def apply_fft(image):
+def apply_fft(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Apply FFT on the image.
 
     Parameters
@@ -82,7 +83,9 @@ def apply_fft(image):
     ), fftcls_shift
 
 
-def inverse_fft(fft_shift, filter_mask=None):
+def inverse_fft(
+    fft_shift: np.ndarray, filter_mask: np.ndarray | None = None
+) -> np.ndarray:
     """Apply inverse FFT.
 
     Parameters
@@ -106,7 +109,9 @@ def inverse_fft(fft_shift, filter_mask=None):
     return np.abs(np.fft.ifft2(f_ishift))
 
 
-def create_filter_mask(size, rows, columns):
+def create_filter_mask(
+    size: tuple[int, int], rows: npt.ArrayLike, columns: npt.ArrayLike
+) -> np.ndarray:
     """Create a filter mask specified by rows and columns.
 
     Specified rows and columns are set to 255, others 0.
@@ -145,7 +150,7 @@ def create_filter_mask(size, rows, columns):
     return filter_mask
 
 
-def filter_mag_spec(mag_spec, filter_mask):
+def filter_mag_spec(mag_spec: np.ndarray, filter_mask: np.ndarray) -> np.ndarray:
     """Filter input spectrum using filter_mask image.
 
     Parameters

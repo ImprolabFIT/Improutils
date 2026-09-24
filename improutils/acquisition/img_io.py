@@ -7,7 +7,7 @@ import numpy as np
 from natsort import natsorted
 
 
-def load_image(file_path):
+def load_image(file_path: str) -> np.ndarray | None:
     """Load an image from a file.
 
     The function calls cv2.imread() to load image from the specified file
@@ -29,7 +29,7 @@ def load_image(file_path):
     return cv2.imread(file_path)
 
 
-def save_image(image, file_path):
+def save_image(image: np.ndarray, file_path: str) -> bool:
     """Save an image to a file.
 
     The function calls cv2.imwrite() to save an image to the specified file. The image format is chosen based on the
@@ -50,7 +50,7 @@ def save_image(image, file_path):
     return cv2.imwrite(file_path, image)
 
 
-def copy_to(src, dst, mask):
+def copy_to(src: np.ndarray, dst: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """Copy source image pixel to destination image using mask matrix.
 
     This function is Python alternative to C++/Java OpenCV's Mat.copyTo().
@@ -75,7 +75,7 @@ def copy_to(src, dst, mask):
     return dst
 
 
-def reindex_image_files(source_dir, output_dir=None):
+def reindex_image_files(source_dir: str, output_dir: str | None = None) -> None:
     """Read all images in source_dir and rename them to continuous integers.
 
     Based on their original order, changes their filenames to be continuous

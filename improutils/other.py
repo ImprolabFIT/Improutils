@@ -1,13 +1,16 @@
 import os
+from collections.abc import Callable, Sequence
+from typing import Any
 
 import cv2
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from IPython.display import display
 
 
-def midpoint(ptA, ptB):
+def midpoint(ptA: npt.ArrayLike, ptB: npt.ArrayLike) -> tuple[float, float]:
     """Return the midpoint between two points.
 
     Parameters
@@ -25,7 +28,7 @@ def midpoint(ptA, ptB):
     return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 
-def artificial_circle_image(size):
+def artificial_circle_image(size: int) -> np.ndarray:
     """Create an image of given size filled with circles.
 
     Parameters
@@ -51,7 +54,7 @@ def artificial_circle_image(size):
     return img_art_circ
 
 
-def order_points(pts):
+def order_points(pts: np.ndarray) -> np.ndarray:
     """Sort the points based on their coordinates, in top-left, top-right, bottom-right, and bottom-left order.
 
     Parameters
@@ -102,7 +105,7 @@ def order_points(pts):
     return np.array([tl, tr, br, bl], dtype="float32")
 
 
-def pcd_to_depth(pcd, height, width):
+def pcd_to_depth(pcd: list[str], height: int, width: int) -> np.ndarray:
     """Reduce point-cloud to coordinates, point cloud [x, y, z, rgb] -> depth[x, y, z].
 
     Parameters
@@ -125,7 +128,7 @@ def pcd_to_depth(pcd, height, width):
     return data
 
 
-def create_file_path(folder, file_name):
+def create_file_path(folder: str, file_name: str) -> str:
     """Create path for filename inside a folder.
 
     Parameters
@@ -148,7 +151,7 @@ def create_file_path(folder, file_name):
     return os.path.join(folder, file_name)
 
 
-def create_slider(min, max, description):
+def create_slider(min: int, max: int, description: str) -> widgets.IntRangeSlider:
     """Create an integer range slider widget.
 
     Parameters
@@ -180,7 +183,9 @@ def create_slider(min, max, description):
     )
 
 
-def multicolor_segmentation(func, colors):
+def multicolor_segmentation(
+    func: Callable[..., Any], colors: list[str]
+) -> dict[str, tuple[tuple[int, int], tuple[int, int], tuple[int, int]]]:
     """Interactive HSV thresholding for multiple colors with saving and returning thresholds that are picked by the user.
 
     Parameters
@@ -231,13 +236,13 @@ def multicolor_segmentation(func, colors):
     button_box = widgets.HBox([save_button, finish_button])
     other_box = widgets.VBox([text_output, interactive_output])
 
-    def reset_sliders():
+    def reset_sliders() -> None:
         h_slider.value = (0, 360)
         s_slider.value = (0, 255)
         v_slider.value = (0, 255)
 
     # button callbacks
-    def on_save_clicked(b):
+    def on_save_clicked(b: widgets.Button) -> None:
         with text_output:
             text_output.clear_output()
             color_thresholds[color_dropdown.value] = (
@@ -254,7 +259,7 @@ def multicolor_segmentation(func, colors):
                 (colors.index(color_dropdown.value) + 1) % len(colors)
             ]
 
-    def on_finish_clicked(b):
+    def on_finish_clicked(b: widgets.Button) -> None:
         with text_output:
             text_output.clear_output()
             print("Returned saved thresholds!")
@@ -268,7 +273,7 @@ def multicolor_segmentation(func, colors):
     return color_thresholds
 
 
-def _plot_grid(xv, yv, squares, ax):
+def _plot_grid(xv: np.ndarray, yv: np.ndarray, squares: int, ax: plt.Axes) -> None:
     for i in np.linspace(0, xv.shape[1] - 1, squares + 1, dtype=int):
         ax.plot(xv[i, :], yv[i, :], "k-")
     for j in np.linspace(0, xv.shape[0] - 1, squares + 1, dtype=int):
@@ -277,7 +282,9 @@ def _plot_grid(xv, yv, squares, ax):
     ax.axis("off")
 
 
-def _radial_distortion(xv, yv, k):
+def _radial_distortion(
+    xv: np.ndarray, yv: np.ndarray, k: Sequence[float]
+) -> tuple[np.ndarray, np.ndarray]:
     xv_radial = np.zeros_like(xv)
     yv_radial = np.zeros_like(yv)
     for i in range(xv.shape[0]):
@@ -291,7 +298,9 @@ def _radial_distortion(xv, yv, k):
     return xv_radial, yv_radial
 
 
-def _tangetial_distortion(xv, yv, p):
+def _tangetial_distortion(
+    xv: np.ndarray, yv: np.ndarray, p: Sequence[float]
+) -> tuple[np.ndarray, np.ndarray]:
     xv_tang = np.zeros_like(xv)
     yv_tang = np.zeros_like(yv)
     for i in range(xv.shape[0]):

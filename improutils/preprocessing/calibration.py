@@ -58,7 +58,7 @@ def camera_calibration(
     """
     print(f"Processing images from {calib_path} with possible extensions {extensions}")
 
-    def correct_extension(path, extensions):
+    def correct_extension(path: Path, extensions: List[str]) -> bool:
         return path.is_file() and path.suffix[1:].lower() in extensions
 
     # termination criteria for subpixel corner detection
@@ -294,12 +294,14 @@ def calibration_stats(
         print(view_error_table)
 
 
-def correct_frame(frame, camera_matrix, dist_coeffs):
+def correct_frame(
+    frame: np.ndarray, camera_matrix: np.ndarray, dist_coeffs: np.ndarray
+) -> np.ndarray:
     """Return an undistorted frame."""
     return cv2.undistort(frame, camera_matrix, dist_coeffs)
 
 
-def load_camera_calib(input_file):
+def load_camera_calib(input_file: str) -> Tuple[np.ndarray, np.ndarray]:
     """Load camera calibration from specified input file.
 
     Parameters
@@ -323,7 +325,9 @@ def load_camera_calib(input_file):
         return np.array([]), np.array([])
 
 
-def save_camera_calib(output_file, camera_matrix, dist_coefs):
+def save_camera_calib(
+    output_file: str, camera_matrix: np.ndarray, dist_coefs: np.ndarray
+) -> None:
     """Save camera calibration data to a YAML file.
 
     This function stores the camera matrix and distortion coefficients in

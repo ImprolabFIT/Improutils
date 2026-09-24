@@ -8,36 +8,36 @@ class ShapeDescriptors:
 
     """An internal class for computing shape descriptors. Not to be used by the programmer."""
 
-    def form_factor(area, perimeter):
+    def form_factor(area: float, perimeter: float) -> float:
         """Compute the form factor of a shape based on area and perimeter."""
         return (4 * np.pi * area) / (perimeter * perimeter)
 
-    def roundness(area, max_diameter):
+    def roundness(area: float, max_diameter: float) -> float:
         """Compute the roundness of a shape based on area and maximum diameter."""
         return (4 * area) / (np.pi * max_diameter * max_diameter)
 
-    def aspect_ratio(min_diameter, max_diameter):
+    def aspect_ratio(min_diameter: float, max_diameter: float) -> float:
         """Compute the aspect ratio of a shape as the ratio of minimum to maximum diameter."""
         return min_diameter / max_diameter
 
-    def convexity(perimeter, convex_perimeter):
+    def convexity(perimeter: float, convex_perimeter: float) -> float:
         """Compute the convexity of a shape as the ratio of convex perimeter to actual perimeter."""
         return convex_perimeter / perimeter
 
-    def solidity(area, convex_area):
+    def solidity(area: float, convex_area: float) -> float:
         """Compute the solidity of a shape as the ratio of area to its convex hull area."""
         return area / convex_area
 
-    def compactness(area, max_diameter):
+    def compactness(area: float, max_diameter: float) -> float:
         """Compute the compactness of a shape based on area and maximum diameter."""
         return np.sqrt(4 / np.pi * area) / max_diameter
 
-    def extent(area, bounding_rectangle_area):
+    def extent(area: float, bounding_rectangle_area: float) -> float:
         """Compute the extent of a shape as the ratio of area to bounding rectangle area."""
         return area / bounding_rectangle_area
 
 
-def form_factor(contour):
+def form_factor(contour: np.ndarray) -> float:
     """Determine the contour's form factor.
 
     Aka "špičatost".
@@ -57,7 +57,7 @@ def form_factor(contour):
     )
 
 
-def roundness(contour):
+def roundness(contour: np.ndarray) -> float:
     """Determine the contour's roundness.
 
     Aka "kulatost".
@@ -80,7 +80,7 @@ def roundness(contour):
     return r
 
 
-def aspect_ratio(contour):
+def aspect_ratio(contour: np.ndarray) -> float:
     """Determine the contour's aspect ratio.
 
     Aka "poměr stran".
@@ -101,7 +101,7 @@ def aspect_ratio(contour):
     return ShapeDescriptors.aspect_ratio(min_diameter, max_diameter)
 
 
-def convexity(contour):
+def convexity(contour: np.ndarray) -> float:
     """Determine the contour's convexity.
 
     Aka "konvexita, vypouklost".
@@ -125,7 +125,7 @@ def convexity(contour):
     return r
 
 
-def solidity(contour):
+def solidity(contour: np.ndarray) -> float:
     """Determine the contour's solidity.
 
     Aka "plnost, celistvost".
@@ -149,7 +149,7 @@ def solidity(contour):
     return r
 
 
-def compactness(contour):
+def compactness(contour: np.ndarray) -> float:
     """Determine the contour's compactness.
 
     Aka "kompaktnost, hutnost".
@@ -172,7 +172,7 @@ def compactness(contour):
     return r
 
 
-def extent(contour):
+def extent(contour: np.ndarray) -> float:
     """Determine the contour's extent.
 
     Aka "dosah, rozměrnost".

@@ -1,10 +1,11 @@
 import cv2
+import numpy as np
 from pytesseract import pytesseract
 
 from improutils import negative
 
 
-def ocr(img_bin, config="", lang=None):
+def ocr(img_bin: np.ndarray, config: str = "", lang: str | None = None) -> str:
     """Detect text in the image.
 
     Parameters
