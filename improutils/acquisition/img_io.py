@@ -53,7 +53,8 @@ def save_image(image: np.ndarray, file_path: str) -> bool:
 def copy_to(src: np.ndarray, dst: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """Copy source image pixel to destination image using mask matrix.
 
-    This function is Python alternative to C++/Java OpenCV's Mat.copyTo().
+    This function wraps cv2.copyTo(), the Python equivalent of OpenCV's Mat.copyTo().
+    The destination image is modified in place.
     More: https://docs.opencv.org/trunk/d3/d63/classcv_1_1Mat.html#a626fe5f96d02525e2604d2ad46dd574f
 
     Parameters
@@ -70,9 +71,8 @@ def copy_to(src: np.ndarray, dst: np.ndarray, mask: np.ndarray) -> np.ndarray:
     Destination image with copied pixels from source image
 
     """
-    locs = np.where(mask != 0)  # Get the non-zero mask locations
-    dst[locs[0], locs[1]] = src[locs[0], locs[1]]
-    return dst
+    # cv2.copyTo needs an 8-bit mask; any non-zero value means copy
+    return cv2.copyTo(src, (mask != 0).astype(np.uint8), dst)
 
 
 def reindex_image_files(source_dir: str, output_dir: str | None = None) -> None:
