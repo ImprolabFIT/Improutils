@@ -282,37 +282,29 @@ def _plot_grid(xv: np.ndarray, yv: np.ndarray, squares: int, ax: plt.Axes) -> No
     ax.axis("off")
 
 
-def _radial_distortion(
-    xv: np.ndarray, yv: np.ndarray, k: Sequence[float]
-) -> tuple[np.ndarray, np.ndarray]:
-    xv_radial = np.zeros_like(xv)
-    yv_radial = np.zeros_like(yv)
-    for i in range(xv.shape[0]):
-        for j in range(xv.shape[1]):
-            r = np.sqrt(xv[i, j] ** 2 + yv[i, j] ** 2)
-            radial = (1 + (k[0] * (r**2) + k[1] * (r**4) + k[2] * (r**6))) / (
-                1 + (k[3] * (r**2) + k[4] * (r**4) + k[5] * (r**6))
-            )
-            xv_radial[i, j] = xv[i, j] * radial
-            yv_radial[i, j] = yv[i, j] * radial
-    return xv_radial, yv_radial
+def _radial_factor(xv: np.ndarray, yv: np.ndarray, k: Sequence[float]) -> np.ndarray:
+    """Compute the radial distortion factor.
+
+    R = (1 + k1 r^2 + k2 r^4 + k3 r^6) / (1 + k4 r^2 + k5 r^4 + k6 r^6)
+    """
+    r2 = xv**2 + yv**2
+    return (1 + k[0] * r2 + k[1] * r2**2 + k[2] * r2**3) / (
+        1 + k[3] * r2 + k[4] * r2**2 + k[5] * r2**3
+    )
 
 
-def _tangetial_distortion(
+def _tangential_shift(
     xv: np.ndarray, yv: np.ndarray, p: Sequence[float]
 ) -> tuple[np.ndarray, np.ndarray]:
-    xv_tang = np.zeros_like(xv)
-    yv_tang = np.zeros_like(yv)
-    for i in range(xv.shape[0]):
-        for j in range(xv.shape[1]):
-            x = xv[i, j]
-            y = yv[i, j]
-            r = np.sqrt(x**2 + y**2)
-            x_tang = x + (2 * p[0] * x * y + p[1] * (r**2 + 2 * x**2))
-            y_tang = y + (p[0] * (r**2 + 2 * y**2) + 2 * p[1] * x * y)
-            xv_tang[i, j] = x_tang
-            yv_tang[i, j] = y_tang
-    return xv_tang, yv_tang
+    """Compute the tangential distortion shift.
+
+    dx = 2 p1 x y + p2 (r^2 + 2 x^2)
+    dy = p1 (r^2 + 2 y^2) + 2 p2 x y
+    """
+    r2 = xv**2 + yv**2
+    dx = 2 * p[0] * xv * yv + p[1] * (r2 + 2 * xv**2)
+    dy = p[0] * (r2 + 2 * yv**2) + 2 * p[1] * xv * yv
+    return dx, dy
 
 
 def plot_distortion(
@@ -326,6 +318,18 @@ def plot_distortion(
     p2: float,
 ) -> None:
     """Vizualization of distortion parameters and their influence. Plots radial, tangential and compounded (radial + tangential) distortion grid using the Brown-Conrady (OpenCV) model.
+
+    A point (x, y) in normalized image coordinates, with r^2 = x^2 + y^2,
+    is distorted as:
+
+        x'' = x * R + dx
+        y'' = y * R + dy
+
+    where R is the radial factor
+        R = (1 + k1 r^2 + k2 r^4 + k3 r^6) / (1 + k4 r^2 + k5 r^4 + k6 r^6)
+    and (dx, dy) is the tangential shift
+        dx = 2 p1 x y + p2 (r^2 + 2 x^2)
+        dy = p1 (r^2 + 2 y^2) + 2 p2 x y
 
     Parameters
     ----------
@@ -363,17 +367,17 @@ def plot_distortion(
         np.linspace(-height / 2, height / 2, pts),
     )
 
-    xv_radial, yv_radial = _radial_distortion(xv, yv, k)
-    xv_tang, yv_tang = _tangetial_distortion(xv, yv, p)
+    radial = _radial_factor(xv, yv, k)
+    dx, dy = _tangential_shift(xv, yv, p)
+
+    grids = [
+        ("Radial distortion grid", xv * radial, yv * radial),
+        ("Tangential distortion grid", xv + dx, yv + dy),
+        ("Compounded distortion grid", xv * radial + dx, yv * radial + dy),
+    ]
 
     _, axs = plt.subplots(1, 3, figsize=(15, 5))
-
-    _plot_grid(xv_radial, yv_radial, squares, axs[0])
-    axs[0].set_title("Radial distortion grid")
-
-    _plot_grid(xv_tang, yv_tang, squares, axs[1])
-    axs[1].set_title("Tangential distortion grid")
-
-    _plot_grid(xv_radial + xv_tang - xv, yv_radial + yv_tang, squares, axs[2])
-    axs[2].set_title("Compounded distortion grid")
+    for ax, (title, x_distorted, y_distorted) in zip(axs, grids):
+        _plot_grid(x_distorted, y_distorted, squares, ax)
+        ax.set_title(title)
     plt.show()
