@@ -314,14 +314,15 @@ def draw_real_sizes(
 
 
 def draw_lines(img: np.ndarray, lines: np.ndarray) -> np.ndarray:
-    """Draw lines coming from  HoughLines procedure into image.
+    """Draw lines coming from  HoughLinesP procedure into image.
 
     Parameters
     ----------
     img : ndarray
         Input image.
     lines : ndarray
-        array of lines - output of cv2.HoughLines.
+        array of lines - output of cv2.HoughLinesP, shape (N, 4) in OpenCV 5
+        or (N, 1, 4) in OpenCV 4.
 
     Returns
     -------
@@ -330,12 +331,14 @@ def draw_lines(img: np.ndarray, lines: np.ndarray) -> np.ndarray:
     """
     img_lines = to_3_channels(img)
 
-    for line in lines:
-        line = line[0]
+    if lines is None:
+        return img_lines
+
+    for line in np.asarray(lines).reshape(-1, 4):
         cv2.line(
             img_lines,
-            (line[0], line[1]),
-            (line[2], line[3]),
+            (int(line[0]), int(line[1])),
+            (int(line[2]), int(line[3])),
             (0, 0, 255),
             2,
             cv2.LINE_AA,
