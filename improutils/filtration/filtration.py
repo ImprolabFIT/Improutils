@@ -77,7 +77,7 @@ def apply_fft(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     fftcls = np.fft.fft2(image)
     fftcls_shift = np.fft.fftshift(fftcls)
-    mag_spec = 20 * np.log(np.abs(fftcls_shift))
+    mag_spec = np.log1p(np.abs(fftcls_shift))
     return cv2.normalize(
         mag_spec, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U
     ), fftcls_shift
