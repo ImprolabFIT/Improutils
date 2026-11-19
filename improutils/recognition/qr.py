@@ -1,8 +1,11 @@
+from typing import Any
+
 import cv2
+import numpy as np
 from qreader import QReader
 
 
-def __GRAY2BGR(img):
+def __GRAY2BGR(img: np.ndarray) -> tuple[np.ndarray, bool]:
     """If the image has shape less than 3, tries to convert it to BGR. Otherwise returns the image unchanged.
 
     Parameters
@@ -29,7 +32,11 @@ def __GRAY2BGR(img):
     return img, False
 
 
-def qr_init_reader(model_size="s", min_confidence=0.5, reencode_to="shift_jis"):
+def qr_init_reader(
+    model_size: str = "s",
+    min_confidence: float = 0.5,
+    reencode_to: str | None = "shift_jis",
+) -> QReader:
     """Initialize a QR code reader.
     
     If you want to use the detect or decode QR codes on multiple occasions, it is recommended to initialize the reader once and then pass it to the functions.
@@ -61,8 +68,11 @@ def qr_init_reader(model_size="s", min_confidence=0.5, reencode_to="shift_jis"):
 
 
 def qr_detect_and_decode(
-    img, return_detections=False, is_bgr=True, reader=qr_init_reader()
-):
+    img: np.ndarray,
+    return_detections: bool = False,
+    is_bgr: bool = True,
+    reader: QReader = qr_init_reader(),
+) -> tuple[str | None, ...] | tuple[tuple[dict[str, Any], str | None], ...]:
     """Detect and decodes QR codes in the given image and return the decoded strings (or None, if any of them was detected but not decoded).
 
     For further info refer to: https://github.com/Eric-Canas/qreader
@@ -94,7 +104,12 @@ def qr_detect_and_decode(
     )
 
 
-def qr_decode(img, detection_result, is_bgr=True, reader=qr_init_reader()):
+def qr_decode(
+    img: np.ndarray,
+    detection_result: dict[str, Any],
+    is_bgr: bool = True,
+    reader: QReader = qr_init_reader(),
+) -> str | None:
     """Decode a single QR code on the given image, described by a detection_result.
 
     For further info refer to: https://github.com/Eric-Canas/qreader
@@ -128,7 +143,9 @@ def qr_decode(img, detection_result, is_bgr=True, reader=qr_init_reader()):
     return reader.decode(img, detection_result)
 
 
-def qr_detect(img, is_bgr=True, reader=qr_init_reader()):
+def qr_detect(
+    img: np.ndarray, is_bgr: bool = True, reader: QReader = qr_init_reader()
+) -> tuple[dict[str, Any], ...]:
     """Detect QR codes in the image and returns a tuple of dictionaries with all the detection information.
 
     For further info refer to: https://github.com/Eric-Canas/qreader

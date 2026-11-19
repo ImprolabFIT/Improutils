@@ -1,7 +1,8 @@
 import cv2
+import numpy as np
 
 
-def apply_mask(img, mask_bin):
+def apply_mask(img: np.ndarray, mask_bin: np.ndarray) -> np.ndarray:
     """Apply binary mask on the image.
 
     Parameters
@@ -19,7 +20,7 @@ def apply_mask(img, mask_bin):
     return cv2.bitwise_and(img, img, mask=mask_bin)
 
 
-def to_intensity(hue_angle):
+def to_intensity(hue_angle: int) -> int:
     """Convert color angle in HUE definition into intensity value of brightness image in opencv.
 
     For further info visit: https://www.docs.opencv.org/trunk/df/d9d/tutorial_py_colorspaces.html.
@@ -37,7 +38,7 @@ def to_intensity(hue_angle):
     return int(hue_angle * 0.5)
 
 
-def to_angle(hue_intensity):
+def to_angle(hue_intensity: int) -> int:
     """Convert hue intensity value of brightness image in opencv into hue angle in HUE definition.
 
     For further info visit: https://www.docs.opencv.org/trunk/df/d9d/tutorial_py_colorspaces.html.
@@ -55,7 +56,7 @@ def to_angle(hue_intensity):
     return hue_intensity * 2
 
 
-def to_3_channels(image):
+def to_3_channels(image: np.ndarray) -> np.ndarray:
     """Convert 1 channel image to 3 channels."""
     if len(image.shape) == 3:
         raise Exception(
@@ -64,7 +65,7 @@ def to_3_channels(image):
     return cv2.merge([image, image, image])
 
 
-def segmentation_one_threshold(img, threshold):
+def segmentation_one_threshold(img: np.ndarray, threshold: int) -> np.ndarray:
     """Segment image into black & white using one threshold.
 
     Parameters
@@ -83,7 +84,7 @@ def segmentation_one_threshold(img, threshold):
     return dst
 
 
-def segmentation_auto_threshold(img):
+def segmentation_auto_threshold(img: np.ndarray) -> np.ndarray:
     """Segment image into black & white using automatic threshold.
 
     Parameters
@@ -100,7 +101,7 @@ def segmentation_auto_threshold(img):
     return dst
 
 
-def segmentation_two_thresholds(img, lower, higher):
+def segmentation_two_thresholds(img: np.ndarray, lower: int, higher: int) -> np.ndarray:
     """Segment image into black & white using two thresholds.
 
     Parameters
@@ -120,7 +121,9 @@ def segmentation_two_thresholds(img, lower, higher):
     return cv2.inRange(img, min(lower, higher), max(lower, higher))
 
 
-def segmentation_adaptive_threshold(img, size, constant=0):
+def segmentation_adaptive_threshold(
+    img: np.ndarray, size: int, constant: int = 0
+) -> np.ndarray:
     """Segment image into black & white using calculated adaptive threshold using Gaussian function in pixel neighbourhood.
 
     Parameters

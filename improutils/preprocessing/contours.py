@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 
 
-def contour_to_image(contour, img_bin, size=None):
+def contour_to_image(
+    contour: np.ndarray, img_bin: np.ndarray, size: tuple[int, int] | None = None
+) -> np.ndarray:
     """Create a new image from the contour.
 
     Parameters
@@ -36,7 +38,13 @@ def contour_to_image(contour, img_bin, size=None):
     return blank[c[1] - half_y : c[1] + half_y, c[0] - half_x : c[0] + half_x].copy()
 
 
-def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True):
+def find_contours(
+    img_bin: np.ndarray,
+    min_area: float = 0,
+    max_area: float = np.inf,
+    fill: bool = True,
+    external: bool = True,
+) -> tuple[np.ndarray, int, list[np.ndarray]]:
     """Find contours in a binary image and filter them by area.
 
     The function counts the filtered contours and draws them on a new binary
@@ -88,7 +96,7 @@ def find_contours(img_bin, min_area=0, max_area=np.inf, fill=True, external=True
     return contour_drawn, len(contours), contours
 
 
-def fill_holes(img_bin, close=False, size=5):
+def fill_holes(img_bin: np.ndarray, close: bool = False, size: int = 5) -> np.ndarray:
     """Fill the holes in found contours. It could merge the contour using close input with appropriate size.
 
     Parameters
@@ -114,7 +122,12 @@ def fill_holes(img_bin, close=False, size=5):
     return res
 
 
-def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
+def find_holes(
+    img_bin: np.ndarray,
+    min_area: float = 0,
+    max_area: float = np.inf,
+    fill: bool = True,
+) -> tuple[np.ndarray, int, list[np.ndarray]]:
     """Find inner contours (holes) in a binary image and filter them by area.
 
     The function identifies contours that are inside other contours (holes),
@@ -147,6 +160,8 @@ def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
     )
     # filter out only hole contours (contours that are inside another contour)
     # for more info about hierarchy retrieval modes visit: https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
+    if hierarchy is None:
+        return np.zeros((img_bin.shape), dtype=np.uint8), 0, []
     hole_indices = [i for i in range(len(hierarchy[0])) if hierarchy[0, i, -1] != -1]
     # filter out contours by area
     contours = [
@@ -168,7 +183,7 @@ def find_holes(img_bin, min_area=0, max_area=np.inf, fill=True):
     return contours_drawn, len(contours), contours
 
 
-def get_center(contour):
+def get_center(contour: np.ndarray) -> tuple[int, int]:
     """Get the center of a contour in pixels in tuple format.
 
     Parameters
