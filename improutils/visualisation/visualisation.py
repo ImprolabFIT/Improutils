@@ -1,5 +1,7 @@
 import copy
 import math
+from collections.abc import Sequence
+from typing import Any
 
 import cv2
 import matplotlib.pyplot as plt
@@ -10,10 +12,18 @@ from improutils.acquisition import copy_to
 from improutils.other import midpoint, order_points
 from improutils.segmentation import to_3_channels
 
+# rotated rectangle as returned by cv2.minAreaRect: ((cx, cy), (w, h), angle)
+RotatedRect = tuple[tuple[float, float], tuple[float, float], float]
+
 
 def plot_images(
-    *imgs, titles=[], channels="bgr", normalize=False, ticks_off=True, title_size=32
-):
+    *imgs: np.ndarray,
+    titles: Sequence[str] = [],
+    channels: str = "bgr",
+    normalize: bool = False,
+    ticks_off: bool = True,
+    title_size: int = 32,
+) -> None:
     """Plot multiple images in one figure.
 
     Parameters
@@ -84,7 +94,9 @@ def plot_images(
             ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 
-def show_images(*imgs, scale=1, window_name="Image preview"):
+def show_images(
+    *imgs: np.ndarray, scale: float = 1, window_name: str = "Image preview"
+) -> None:
     """Display multiple images in separate resizable windows.
 
     Each image in the input list is shown in its own window. The user can
@@ -111,7 +123,7 @@ def show_images(*imgs, scale=1, window_name="Image preview"):
 
     """
 
-    def print_xy(event, x, y, flags, param):
+    def print_xy(event: int, x: int, y: int, flags: int, param: Any) -> None:
         if event == cv2.EVENT_LBUTTONUP:
             print("x = %d, y = %d" % (x, y))
 
@@ -135,7 +147,7 @@ def show_images(*imgs, scale=1, window_name="Image preview"):
     cv2.destroyAllWindows()
 
 
-def show_camera_window(*imgs, scale=1):
+def show_camera_window(*imgs: np.ndarray, scale: float = 1) -> None:
     """Open input images in separate windows.
 
     Parameters
@@ -151,7 +163,7 @@ def show_camera_window(*imgs, scale=1):
 
     """
 
-    def print_xy(event, x, y, flags, param):
+    def print_xy(event: int, x: int, y: int, flags: int, param: Any) -> None:
         if event == cv2.EVENT_LBUTTONUP:
             print("x = %d, y = %d" % (x, y))
 
@@ -167,7 +179,9 @@ def show_camera_window(*imgs, scale=1):
         cv2.imshow(window_name_id, img)
 
 
-def draw_rotated_rect(img, cnt):
+def draw_rotated_rect(
+    img: np.ndarray, cnt: np.ndarray
+) -> tuple[np.ndarray, RotatedRect]:
     """Draw rotated rectangle with minimum area into the image, around the contour.
 
     Input image is not modified.
@@ -195,7 +209,14 @@ def draw_rotated_rect(img, cnt):
     return res, rect
 
 
-def draw_text(img, text, point, text_scale, text_color, text_thickness):
+def draw_text(
+    img: np.ndarray,
+    text: float,
+    point: tuple[int, int],
+    text_scale: float,
+    text_color: tuple[int, int, int],
+    text_thickness: int,
+) -> np.ndarray:
     """Draw rotated text into the image.
 
     Parameters
@@ -233,14 +254,14 @@ def draw_text(img, text, point, text_scale, text_color, text_thickness):
 
 
 def draw_real_sizes(
-    img,
-    rect,
-    width_text,
-    height_text,
-    lbl_size_scale=2,
-    lbl_color=(0, 0, 255),
-    lbl_thickness=8,
-):
+    img: np.ndarray,
+    rect: RotatedRect,
+    width_text: float,
+    height_text: float,
+    lbl_size_scale: float = 2,
+    lbl_color: tuple[int, int, int] = (0, 0, 255),
+    lbl_thickness: int = 8,
+) -> np.ndarray:
     """Draw real sizes of rotated rectangle into the image.
 
     Parameters
@@ -298,15 +319,16 @@ def draw_real_sizes(
     return result
 
 
-def draw_lines(img, lines):
-    """Draw lines coming from  HoughLines procedure into image.
+def draw_lines(img: np.ndarray, lines: np.ndarray) -> np.ndarray:
+    """Draw lines coming from  HoughLinesP procedure into image.
 
     Parameters
     ----------
     img : ndarray
         Input image.
     lines : ndarray
-        array of lines - output of cv2.HoughLines.
+        array of lines - output of cv2.HoughLinesP, shape (N, 4) in OpenCV 5
+        or (N, 1, 4) in OpenCV 4.
 
     Returns
     -------
@@ -315,12 +337,14 @@ def draw_lines(img, lines):
     """
     img_lines = to_3_channels(img)
 
-    for line in lines:
-        line = line[0]
+    if lines is None:
+        return img_lines
+
+    for line in np.asarray(lines).reshape(-1, 4):
         cv2.line(
             img_lines,
-            (line[0], line[1]),
-            (line[2], line[3]),
+            (int(line[0]), int(line[1])),
+            (int(line[2]), int(line[3])),
             (0, 0, 255),
             2,
             cv2.LINE_AA,
@@ -329,7 +353,7 @@ def draw_lines(img, lines):
     return img_lines
 
 
-def color_picker(img):
+def color_picker(img: np.ndarray) -> None:
     """Interactive tool to pick colors from an image.
 
     Displays the input image in a window and allows the user to click
@@ -354,7 +378,7 @@ def color_picker(img):
     window_name = "color picker"
     colors = []
 
-    def on_mouse_click(event, x, y, _, img):
+    def on_mouse_click(event: int, x: int, y: int, _: int, img: np.ndarray) -> None:
         if event == cv2.EVENT_LBUTTONUP:
             colors.append(img[y, x].tolist())
             cv2.putText(

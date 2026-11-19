@@ -1,13 +1,16 @@
 import os
+from collections.abc import Callable, Sequence
+from typing import Any
 
 import cv2
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from IPython.display import display
 
 
-def midpoint(ptA, ptB):
+def midpoint(ptA: npt.ArrayLike, ptB: npt.ArrayLike) -> tuple[float, float]:
     """Return the midpoint between two points.
 
     Parameters
@@ -25,7 +28,7 @@ def midpoint(ptA, ptB):
     return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 
-def artificial_circle_image(size):
+def artificial_circle_image(size: int) -> np.ndarray:
     """Create an image of given size filled with circles.
 
     Parameters
@@ -51,7 +54,7 @@ def artificial_circle_image(size):
     return img_art_circ
 
 
-def order_points(pts):
+def order_points(pts: np.ndarray) -> np.ndarray:
     """Sort the points based on their coordinates, in top-left, top-right, bottom-right, and bottom-left order.
 
     Parameters
@@ -102,7 +105,7 @@ def order_points(pts):
     return np.array([tl, tr, br, bl], dtype="float32")
 
 
-def pcd_to_depth(pcd, height, width):
+def pcd_to_depth(pcd: list[str], height: int, width: int) -> np.ndarray:
     """Reduce point-cloud to coordinates, point cloud [x, y, z, rgb] -> depth[x, y, z].
 
     Parameters
@@ -125,7 +128,7 @@ def pcd_to_depth(pcd, height, width):
     return data
 
 
-def create_file_path(folder, file_name):
+def create_file_path(folder: str, file_name: str) -> str:
     """Create path for filename inside a folder.
 
     Parameters
@@ -148,7 +151,7 @@ def create_file_path(folder, file_name):
     return os.path.join(folder, file_name)
 
 
-def create_slider(min, max, description):
+def create_slider(min: int, max: int, description: str) -> widgets.IntRangeSlider:
     """Create an integer range slider widget.
 
     Parameters
@@ -180,7 +183,9 @@ def create_slider(min, max, description):
     )
 
 
-def multicolor_segmentation(func, colors):
+def multicolor_segmentation(
+    func: Callable[..., Any], colors: list[str]
+) -> dict[str, tuple[tuple[int, int], tuple[int, int], tuple[int, int]]]:
     """Interactive HSV thresholding for multiple colors with saving and returning thresholds that are picked by the user.
 
     Parameters
@@ -231,13 +236,13 @@ def multicolor_segmentation(func, colors):
     button_box = widgets.HBox([save_button, finish_button])
     other_box = widgets.VBox([text_output, interactive_output])
 
-    def reset_sliders():
+    def reset_sliders() -> None:
         h_slider.value = (0, 360)
         s_slider.value = (0, 255)
         v_slider.value = (0, 255)
 
     # button callbacks
-    def on_save_clicked(b):
+    def on_save_clicked(b: widgets.Button) -> None:
         with text_output:
             text_output.clear_output()
             color_thresholds[color_dropdown.value] = (
@@ -254,7 +259,7 @@ def multicolor_segmentation(func, colors):
                 (colors.index(color_dropdown.value) + 1) % len(colors)
             ]
 
-    def on_finish_clicked(b):
+    def on_finish_clicked(b: widgets.Button) -> None:
         with text_output:
             text_output.clear_output()
             print("Returned saved thresholds!")
@@ -268,7 +273,7 @@ def multicolor_segmentation(func, colors):
     return color_thresholds
 
 
-def _plot_grid(xv, yv, squares, ax):
+def _plot_grid(xv: np.ndarray, yv: np.ndarray, squares: int, ax: plt.Axes) -> None:
     for i in np.linspace(0, xv.shape[1] - 1, squares + 1, dtype=int):
         ax.plot(xv[i, :], yv[i, :], "k-")
     for j in np.linspace(0, xv.shape[0] - 1, squares + 1, dtype=int):
@@ -277,33 +282,29 @@ def _plot_grid(xv, yv, squares, ax):
     ax.axis("off")
 
 
-def _radial_distortion(xv, yv, k):
-    xv_radial = np.zeros_like(xv)
-    yv_radial = np.zeros_like(yv)
-    for i in range(xv.shape[0]):
-        for j in range(xv.shape[1]):
-            r = np.sqrt(xv[i, j] ** 2 + yv[i, j] ** 2)
-            radial = (1 + (k[0] * (r**2) + k[1] * (r**4) + k[2] * (r**6))) / (
-                1 + (k[3] * (r**2) + k[4] * (r**4) + k[5] * (r**6))
-            )
-            xv_radial[i, j] = xv[i, j] * radial
-            yv_radial[i, j] = yv[i, j] * radial
-    return xv_radial, yv_radial
+def _radial_factor(xv: np.ndarray, yv: np.ndarray, k: Sequence[float]) -> np.ndarray:
+    """Compute the radial distortion factor.
+
+    R = (1 + k1 r^2 + k2 r^4 + k3 r^6) / (1 + k4 r^2 + k5 r^4 + k6 r^6)
+    """
+    r2 = xv**2 + yv**2
+    return (1 + k[0] * r2 + k[1] * r2**2 + k[2] * r2**3) / (
+        1 + k[3] * r2 + k[4] * r2**2 + k[5] * r2**3
+    )
 
 
-def _tangetial_distortion(xv, yv, p):
-    xv_tang = np.zeros_like(xv)
-    yv_tang = np.zeros_like(yv)
-    for i in range(xv.shape[0]):
-        for j in range(xv.shape[1]):
-            x = xv[i, j]
-            y = yv[i, j]
-            r = np.sqrt(x**2 + y**2)
-            x_tang = x + (2 * p[0] * x * y + p[1] * (r**2 + 2 * x**2))
-            y_tang = y + (p[0] * (r**2 + 2 * y**2) + 2 * p[1] * x * y)
-            xv_tang[i, j] = x_tang
-            yv_tang[i, j] = y_tang
-    return xv_tang, yv_tang
+def _tangential_shift(
+    xv: np.ndarray, yv: np.ndarray, p: Sequence[float]
+) -> tuple[np.ndarray, np.ndarray]:
+    """Compute the tangential distortion shift.
+
+    dx = 2 p1 x y + p2 (r^2 + 2 x^2)
+    dy = p1 (r^2 + 2 y^2) + 2 p2 x y
+    """
+    r2 = xv**2 + yv**2
+    dx = 2 * p[0] * xv * yv + p[1] * (r2 + 2 * xv**2)
+    dy = p[0] * (r2 + 2 * yv**2) + 2 * p[1] * xv * yv
+    return dx, dy
 
 
 def plot_distortion(
@@ -317,6 +318,18 @@ def plot_distortion(
     p2: float,
 ) -> None:
     """Vizualization of distortion parameters and their influence. Plots radial, tangential and compounded (radial + tangential) distortion grid using the Brown-Conrady (OpenCV) model.
+
+    A point (x, y) in normalized image coordinates, with r^2 = x^2 + y^2,
+    is distorted as:
+
+        x'' = x * R + dx
+        y'' = y * R + dy
+
+    where R is the radial factor
+        R = (1 + k1 r^2 + k2 r^4 + k3 r^6) / (1 + k4 r^2 + k5 r^4 + k6 r^6)
+    and (dx, dy) is the tangential shift
+        dx = 2 p1 x y + p2 (r^2 + 2 x^2)
+        dy = p1 (r^2 + 2 y^2) + 2 p2 x y
 
     Parameters
     ----------
@@ -354,17 +367,17 @@ def plot_distortion(
         np.linspace(-height / 2, height / 2, pts),
     )
 
-    xv_radial, yv_radial = _radial_distortion(xv, yv, k)
-    xv_tang, yv_tang = _tangetial_distortion(xv, yv, p)
+    radial = _radial_factor(xv, yv, k)
+    dx, dy = _tangential_shift(xv, yv, p)
+
+    grids = [
+        ("Radial distortion grid", xv * radial, yv * radial),
+        ("Tangential distortion grid", xv + dx, yv + dy),
+        ("Compounded distortion grid", xv * radial + dx, yv * radial + dy),
+    ]
 
     _, axs = plt.subplots(1, 3, figsize=(15, 5))
-
-    _plot_grid(xv_radial, yv_radial, squares, axs[0])
-    axs[0].set_title("Radial distortion grid")
-
-    _plot_grid(xv_tang, yv_tang, squares, axs[1])
-    axs[1].set_title("Tangential distortion grid")
-
-    _plot_grid(xv_radial + xv_tang, yv_radial + yv_tang, squares, axs[2])
-    axs[2].set_title("Compounded distortion grid")
+    for ax, (title, x_distorted, y_distorted) in zip(axs, grids):
+        _plot_grid(x_distorted, y_distorted, squares, ax)
+        ax.set_title(title)
     plt.show()

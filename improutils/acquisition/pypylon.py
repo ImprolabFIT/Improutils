@@ -1,7 +1,7 @@
 from pypylon import pylon
 
 
-def connect_camera(serial_number):
+def connect_camera(serial_number: str) -> pylon.InstantCamera | None:
     """Connect the camera specified with its serial number.
 
     Parameters

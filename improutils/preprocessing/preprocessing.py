@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def to_gray(img_bgr):
+def to_gray(img_bgr: np.ndarray) -> np.ndarray:
     """Convert image to monochrome.
 
     Parameters
@@ -20,7 +20,7 @@ def to_gray(img_bgr):
     return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
 
-def to_hsv(img_bgr):
+def to_hsv(img_bgr: np.ndarray) -> np.ndarray:
     """Convert image to HSV (hue, saturation, value) color space.
 
     Parameters
@@ -37,7 +37,7 @@ def to_hsv(img_bgr):
     return dst
 
 
-def to_rgb(img_bgr):
+def to_rgb(img_bgr: np.ndarray) -> np.ndarray:
     """Convert image to RGB (red, green, blue) color space from BGR.
 
     Parameters
@@ -54,7 +54,7 @@ def to_rgb(img_bgr):
     return dst
 
 
-def negative(img):
+def negative(img: np.ndarray) -> np.ndarray:
     """Convert image to its negative.
 
     Parameters
@@ -71,7 +71,7 @@ def negative(img):
     return dst
 
 
-def normalize(img):
+def normalize(img: np.ndarray) -> np.ndarray:
     """Normalize image using min-max normalization from its values to values 0 - 255.
 
     Parameters
@@ -83,7 +83,7 @@ def normalize(img):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
 
-def normalize2BGR_image(img):
+def normalize2BGR_image(img: np.ndarray) -> np.ndarray:
     """Normalize image using min-max and converts it to BGR.
 
     Parameters
@@ -101,7 +101,7 @@ def normalize2BGR_image(img):
     return cv2.cvtColor(scaled, cv2.COLOR_GRAY2BGR)
 
 
-def crop(img, tl_x, tl_y, br_x, br_y):
+def crop(img: np.ndarray, tl_x: int, tl_y: int, br_x: int, br_y: int) -> np.ndarray:
     """Crop an image by added coordinates.
 
     Parameters
@@ -126,13 +126,17 @@ def crop(img, tl_x, tl_y, br_x, br_y):
     return roi
 
 
-def crop_by_bounding_rect(img_bin):
-    """Crop binary image by ONE bounding rectangle corresponding to ALL objects in the binary image.
+def crop_by_bounding_rect(img_bin: np.ndarray, contour_index: int = 0) -> np.ndarray:
+    """Crop binary image by ONE bounding rectangle corresponding to the object in the binary image.
+    The object is specified by the contour index in case of more objects.
 
     Parameters
     ----------
     img_bin : ndarray
         Input binary image.
+
+    contour_index : int
+        Index of the contour to be used for cropping. Default is 0 (the first contour
 
     Returns
     -------
@@ -142,11 +146,13 @@ def crop_by_bounding_rect(img_bin):
     assert len(img_bin.shape) == 2, "Input image is NOT binary!"
 
     contours, _ = cv2.findContours(img_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    tl_x, tl_y, w, h = cv2.boundingRect(contours[0])
+    if len(contours) == 0:
+        raise ValueError("Could not crop the object as no contours were found.")
+    tl_x, tl_y, w, h = cv2.boundingRect(contours[contour_index])
     return crop(img_bin, tl_x, tl_y, tl_x + w, tl_y + h)
 
 
-def crop_contour(contour, img):
+def crop_contour(contour: np.ndarray, img: np.ndarray) -> np.ndarray:
     """Crop contour in respect to its bounding rectangle.
 
     It's the fastest method, but could include other parts
@@ -169,7 +175,9 @@ def crop_contour(contour, img):
     return img[y : y + h, x : x + w]
 
 
-def resize(image, size, method=cv2.INTER_AREA):
+def resize(
+    image: np.ndarray, size: tuple[int, int], method: int = cv2.INTER_AREA
+) -> np.ndarray:
     """Resize the image to the preffered size.
 
     Method of resizing is well suited for making the images smaller rather than larger
@@ -190,10 +198,12 @@ def resize(image, size, method=cv2.INTER_AREA):
 
     """
     assert type(size) is tuple, "Variable size is NOT a tuple!"
-    return cv2.resize(image, size, method)
+    return cv2.resize(image, size, interpolation=method)
 
 
-def rotate(image, angle, image_center=None):
+def rotate(
+    image: np.ndarray, angle: float, image_center: tuple[float, float] | None = None
+) -> np.ndarray:
     """Rotate the input image by specified angle.
 
     Parameters
@@ -230,7 +240,12 @@ def rotate(image, angle, image_center=None):
     return dest
 
 
-def polar_warp(img, size=None, full_radius=True, inverse=False):
+def polar_warp(
+    img: np.ndarray,
+    size: tuple[int, int] | None = None,
+    full_radius: bool = True,
+    inverse: bool = False,
+) -> np.ndarray:
     """Apply a polar warp to an image.
 
     This function performs a polar coordinate transformation on the input
@@ -240,13 +255,15 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
     Parameters
     ----------
     img : ndarray
-        Input image to be warped.
+        Input image to be warped. For the inverse warp, this is the image in polar coordinates.
     size : tuple of int, optional
-        Size of the destination image as (height, width). Default is None,
+        Size of the destination image as (width, height). Default is None,
         which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
+        For the inverse warp, size is required and must be the size of the original image, because the center and radius are computed from it.
     full_radius : bool, optional
         If True, the warp uses the full radius of the image (diagonal from
         center to corner). If False, only the vertical radius is used.
+        Must be teh same fro the forward and inverse warp.
         Default is True.
     inverse : bool, optional
         If True, applies the inverse warp mapping. Default is False.
@@ -254,15 +271,28 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
     Returns
     -------
     ndarray
-        Warped image in polar coordinates.
-
+        Warped image in polar coordinates, or in Cartesian coordinates if inverse is True.
+    
+    Raises
+    ------
+    ValueError
+        If inverse is True and size is None
+    
     """
-    center = (img.shape[0] / 2.0, img.shape[1] / 2.0)
+
+    if inverse:
+        if size is None:
+            raise ValueError("Inverse warp needs the size of the original image as (width, height).")
+        width, height = size
+    else:
+        height, width = img.shape[:2]
+
+    center = (width / 2.0, height / 2.0)
 
     if full_radius:
-        radius = np.sqrt(((img.shape[0] / 2.0) ** 2.0) + ((img.shape[1] / 2.0) ** 2.0))
+        radius = np.hypot(width / 2.0, height / 2.0)
     else:
-        radius = center[0]
+        radius = height / 2.0
 
     method = cv2.WARP_FILL_OUTLIERS
 
@@ -272,7 +302,9 @@ def polar_warp(img, size=None, full_radius=True, inverse=False):
     return dest
 
 
-def warp_to_polar(img, size=None, full_radius=True):
+def warp_to_polar(
+    img: np.ndarray, size: tuple[int, int] | None = None, full_radius: bool = True
+) -> np.ndarray:
     """Warp an image to polar coordinates.
 
     This function applies a polar coordinate transformation to the input
@@ -283,8 +315,8 @@ def warp_to_polar(img, size=None, full_radius=True):
     img : ndarray
         Input image to be warped.
     size : tuple of int, optional
-        Size of the output image as (height, width). Default is None,
-        which preserves the original image size.
+        Size of the destination image as (width, height). Default is None,
+        which transforms size to (pi*Rm,Rm), see cv2.warpPolar documentation.
     full_radius : bool, optional
         If True, uses the full image diagonal as the radius for the warp.
         If False, uses only the vertical radius. Default is True.
@@ -298,7 +330,9 @@ def warp_to_polar(img, size=None, full_radius=True):
     return polar_warp(img, size, full_radius)
 
 
-def warp_to_cartesian(img, size=None, full_radius=True):
+def warp_to_cartesian(
+    img: np.ndarray, size: tuple[int, int] | None = None, full_radius: bool = True
+) -> np.ndarray:
     """Warp an image from polar coordinates back to Cartesian coordinates.
 
     This function applies an inverse polar coordinate transformation to
@@ -308,9 +342,8 @@ def warp_to_cartesian(img, size=None, full_radius=True):
     ----------
     img : ndarray
         Input image to be warped.
-    size : tuple of int, optional
-        Size of the output image as (height, width). Default is None,
-        which preserves the original image size.
+    size : tuple of int
+        Size of the output image as (width, height). 
     full_radius : bool, optional
         If True, uses the full image diagonal as the radius for the warp.
         If False, uses only the vertical radius. Default is True.

@@ -1,11 +1,23 @@
+from collections.abc import Sequence
+
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from skimage import color, feature, transform
 
 from .coord_conversion import convert_pt_to_homogenous
 
+# (top point, bottom point, real height) of a reference object
+RefMeasurement = tuple[npt.ArrayLike, npt.ArrayLike, float]
+# (locations, directions, strengths) as computed by _compute_edgelets
+Edgelets = tuple[np.ndarray, np.ndarray, np.ndarray]
 
-def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
+
+def _calc_alfa_metric_factor(
+    ref_measurements: Sequence[RefMeasurement],
+    vanish_line: np.ndarray,
+    vert_vanish_point: np.ndarray,
+) -> float:
     """Calculate the alpha metric factor using multiple reference measurements.
 
     The factor is estimated by minimizing ‖As‖ = 0 using singular value decomposition (SVD).
@@ -43,13 +55,15 @@ def _calc_alfa_metric_factor(ref_measurements, vanish_line, vert_vanish_point):
         # print(alfa_metric_factor)
 
     u, s, vh = np.linalg.svd(matrix_A)
-    return vh[0, -1] / vh[1, -1]
+    return vh[-1, 0] / vh[-1, 1]
 
 
 class HeightEstimator:
     """Estimate real world object height based on two points (top and bottom) measured on image plane."""
 
-    def __init__(self, ref_measurements, vl, vz):
+    def __init__(
+        self, ref_measurements: Sequence[RefMeasurement], vl: np.ndarray, vz: np.ndarray
+    ) -> None:
         """Initialize a HeightEstimator instance.
 
         This constructor computes the alpha metric factor from a set of reference
@@ -75,7 +89,9 @@ class HeightEstimator:
             ref_measurements, self._vanish_line, self._vert_vanish_point
         )
 
-    def calc_height(self, top_point, bottom_point):
+    def calc_height(
+        self, top_point: npt.ArrayLike, bottom_point: npt.ArrayLike
+    ) -> float:
         """Calculate real-world height from image-plane measurements.
 
         Given the top and bottom points of an object in the image plane, this function
@@ -118,7 +134,7 @@ References
 """
 
 
-def _compute_edgelets(image, sigma=3):
+def _compute_edgelets(image: np.ndarray, sigma: float = 3) -> Edgelets:
     """Create edgelets as in the paper.
 
     Uses canny edge detection and then finds (small) lines using probabilstic
@@ -167,7 +183,7 @@ def _compute_edgelets(image, sigma=3):
     return (locations, directions, strengths)
 
 
-def _edgelet_lines(edgelets):
+def _edgelet_lines(edgelets: Edgelets) -> np.ndarray:
     """Compute lines in homogenous system for edglets.
 
     Parameters
@@ -190,7 +206,9 @@ def _edgelet_lines(edgelets):
     return lines
 
 
-def _compute_votes(edgelets, model, threshold_inlier=5):
+def _compute_votes(
+    edgelets: Edgelets, model: np.ndarray, threshold_inlier: float = 5
+) -> np.ndarray:
     """Compute votes for each of the edgelet against a given vanishing point.
 
     Votes for edgelets which lie inside threshold are same as their strengths,
@@ -231,7 +249,9 @@ def _compute_votes(edgelets, model, threshold_inlier=5):
     return (theta < theta_thresh) * strengths
 
 
-def _ransac_vanishing_point(edgelets, num_ransac_iter=2000, threshold_inlier=5):
+def _ransac_vanishing_point(
+    edgelets: Edgelets, num_ransac_iter: int = 2000, threshold_inlier: float = 5
+) -> np.ndarray | None:
     """Estimate vanishing point using Ransac.
 
     Parameters
@@ -289,7 +309,9 @@ def _ransac_vanishing_point(edgelets, num_ransac_iter=2000, threshold_inlier=5):
     return best_model
 
 
-def _reestimate_model(model, edgelets, threshold_reestimate=5):
+def _reestimate_model(
+    model: np.ndarray, edgelets: Edgelets, threshold_reestimate: float = 5
+) -> np.ndarray:
     """Reestimate vanishing point using inliers and least squares.
 
     All the edgelets which are within a threshold are used to reestimate model
@@ -326,7 +348,9 @@ def _reestimate_model(model, edgelets, threshold_reestimate=5):
     return np.concatenate((est_model, [1.0]))
 
 
-def _remove_inliers(model, edgelets, threshold_inlier=10):
+def _remove_inliers(
+    model: np.ndarray, edgelets: Edgelets, threshold_inlier: float = 10
+) -> Edgelets:
     """Remove all inlier edglets of a given model.
 
     Parameters
@@ -354,7 +378,13 @@ def _remove_inliers(model, edgelets, threshold_inlier=10):
     return edgelets
 
 
-def _compute_homography_and_warp(image, vp1, vp2, clip=True, clip_factor=3):
+def _compute_homography_and_warp(
+    image: np.ndarray,
+    vp1: np.ndarray,
+    vp2: np.ndarray,
+    clip: bool = True,
+    clip_factor: float = 3,
+) -> np.ndarray:
     """Compute homography from vanishing points and warp the image.
 
     It is assumed that vp1 and vp2 correspond to horizontal and vertical
@@ -469,7 +499,7 @@ def _compute_homography_and_warp(image, vp1, vp2, clip=True, clip_factor=3):
     return warped_img
 
 
-def _vis_edgelets(image, edgelets, show=True):
+def _vis_edgelets(image: np.ndarray, edgelets: Edgelets, show: bool = True) -> None:
     """Visualize edgelets."""
     plt.figure(figsize=(10, 10))
     plt.imshow(image)
@@ -490,7 +520,7 @@ def _vis_edgelets(image, edgelets, show=True):
         plt.show()
 
 
-def _vis_model(image, model, show=True):
+def _vis_model(image: np.ndarray, model: np.ndarray, show: bool = True) -> None:
     """Visualize computed model."""
     edgelets = _compute_edgelets(image)
     locations, directions, strengths = edgelets
@@ -510,7 +540,9 @@ def _vis_model(image, model, show=True):
         plt.show()
 
 
-def compute_vanishing_points(image, clip_factor=6, reestimate=False):
+def compute_vanishing_points(
+    image: np.ndarray, clip_factor: float = 6, reestimate: bool = False
+) -> list[np.ndarray]:
     """Rectified image with vanishing point computed using ransac.
 
     Parameters
