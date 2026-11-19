@@ -269,6 +269,12 @@ def draw_real_sizes(
     mid_pt_height = midpoint(tl, bl)
     mid_pt_width = midpoint(bl, br)
 
+    short_text, long_text = sorted([width_text, height_text])
+    if np.linalg.norm(bl - br) >= np.linalg.norm(tl - bl):  # "width" side is the longer one
+        width_text, height_text = long_text, short_text
+    else:
+        width_text, height_text = short_text, long_text
+
     # bottom-left points where labels are drawn
     pt_label_first = (int(mid_pt_width[0] - 10), int(mid_pt_width[1] - 10))
     pt_label_second = (int(mid_pt_height[0] + 10), int(mid_pt_height[1]))
