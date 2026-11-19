@@ -5,7 +5,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 
 if os.environ.get("TARGET_ENV"):
     __version__ = __version__ + ".dev" + os.environ["CI_JOB_ID"]
@@ -29,7 +29,7 @@ setuptools.setup(
         "numpy>=1.19.3",
         "Pillow>=8.1.0",
         "matplotlib>=3.4.2",
-        "opencv-python>=4.5.3.56",
+        "opencv-python>=5.0.0",
         "Pylon>=0.4.4",
         "pypylon",
         "pytesseract>=0.3.7",
